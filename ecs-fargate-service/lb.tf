@@ -77,6 +77,7 @@ resource "aws_alb_target_group" "lb" {
     timeout  = var.healthcheck_timeout
     matcher  = var.healthcheck_matcher
   }
+  deregistration_delay = var.deregistration_delay
 }
 
 

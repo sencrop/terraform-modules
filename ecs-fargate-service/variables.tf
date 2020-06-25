@@ -100,3 +100,7 @@ variable "autoscale_cpu_target" {
 variable "tags" {
   default = {}
 }
+variable "deregistration_delay" {
+  description = "load balancer target group deregistration"
+  default = 300
+}
