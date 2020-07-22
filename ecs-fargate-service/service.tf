@@ -32,6 +32,8 @@ locals {
     "\"volumesFrom\": [ { \"sourceContainer\": \"${var.side_car_name}\", \"readOnly\": true } ],"
   )
 
+  ulimits_block = (var.docker_ulimits == [] ? "" : "\"ulimits\": ${jsonencode(var.docker_ulimits)},")
+
   side_car_task_def = <<EOF
 , {
     "image": "${var.side_car_image}",
@@ -97,6 +99,7 @@ resource "aws_ecs_task_definition" "task" {
     "name": "${var.service_name}",
     "networkMode": "awsvpc",
     "mountPoints": [],
+    ${local.ulimits_block}
     ${local.volume_block}
     ${local.port_block}
     ${local.command_block}

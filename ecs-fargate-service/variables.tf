@@ -104,3 +104,7 @@ variable "deregistration_delay" {
   description = "load balancer target group deregistration"
   default = 300
 }
+variable "docker_ulimits" {
+  description = "see https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Ulimit.html"
+  default = []
+}
