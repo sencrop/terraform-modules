@@ -48,6 +48,11 @@ resource "aws_security_group" "lb_to_service" {
   }
 
   tags = var.tags
+
+  // due to dependency bug https://github.com/hashicorp/terraform/issues/8617
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 
@@ -79,7 +84,6 @@ resource "aws_alb_target_group" "lb" {
   }
   deregistration_delay = var.deregistration_delay
 }
-
 
 # Route all traffic from the ALB endpoint to the target group
 resource "aws_alb_listener" "lb" {
