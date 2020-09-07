@@ -22,27 +22,61 @@ locals {
     }
   ])
 
-  # TODO jsonencode of maps instead of string interpolation
-  env_block     = "\"environment\": ${local.encoded_vars},"
-  command_block = (var.command == "" ? "" : "\"command\": ${jsonencode(var.command)},")
-  port_block = (var.port == 0 ? "" :
-  "\"portMappings\": [{ \"containerPort\": ${var.port}, \"hostPort\": ${var.port},\"protocol\": \"tcp\" }],")
+  main_task = [{
+    cpu : 0,
+    image : var.image,
+    name : var.service_name,
+    networkMode : "awsvpc",
+    mountPoints : [],
+    ulimits : ( 
+      var.docker_ulimits == [] ?
+      null :
+      var.docker_ulimits
+     ),
+    volumesFrom : (
+      var.side_car_image == "" ?
+      [] :
+      [ { 
+          sourceContainer: var.side_car_name,
+          readOnly : true
+        } ]
+    ),
+    portMappings : (
+      var.port == 0 ?
+      [] :
+      [{
+          containerPort: var.port,
+          hostPort: var.port,
+          protocol: "tcp"
+       }]
+    ),
+    command : var.command,
+    environment : [
+      for k in keys(var.env_vars) :
+      {
+        name : k,
+        value : var.env_vars[k]
+      }
+    ],
+    logConfiguration : {
+      logDriver: "awslogs",
+      options: {         
+        awslogs-group : aws_cloudwatch_log_group.service_log.name,
+        awslogs-region: "eu-central-1",
+        awslogs-stream-prefix: "ecs"
+      }
+    }
+  }]
 
-  volume_block = (var.side_car_image == "" ? "" :
-    "\"volumesFrom\": [ { \"sourceContainer\": \"${var.side_car_name}\", \"readOnly\": true } ],"
-  )
-
-  ulimits_block = (var.docker_ulimits == [] ? "" : "\"ulimits\": ${jsonencode(var.docker_ulimits)},")
-
-  side_car_task_def = <<EOF
-, {
-    "image": "${var.side_car_image}",
-    "name": "${var.side_car_name}",
-    "networkMode": "awsvpc"
-  }
-EOF
-
-  side_car = (var.side_car_image == "" ? "" : local.side_car_task_def)
+  side_car_task = (
+      var.side_car_image == "" ?
+      [] :
+      [{ 
+        image: var.side_car_image,
+        name: var.side_car_name,
+        networkMode: "awsvpc"
+      }] 
+  ) 
 }
 
 resource "aws_iam_role" "task_role" {
@@ -91,31 +125,11 @@ resource "aws_ecs_task_definition" "task" {
 
   // container definition spec
   // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html
-  container_definitions = <<EOF
-[
-  {
-    "cpu": 0,
-    "image": "${var.image}",
-    "name": "${var.service_name}",
-    "networkMode": "awsvpc",
-    "mountPoints": [],
-    ${local.ulimits_block}
-    ${local.volume_block}
-    ${local.port_block}
-    ${local.command_block}
-    ${local.env_block}
-    "logConfiguration": {
-      "logDriver": "awslogs",
-      "options": {
-         "awslogs-group" : "${aws_cloudwatch_log_group.service_log.name}",
-         "awslogs-region": "eu-central-1",
-         "awslogs-stream-prefix": "ecs"
-      }
-    }
-  }
-  ${local.side_car}
-]
-EOF
+  container_definitions = jsonencode(
+    flatten (
+      [ local.main_task, local.side_car_task ] 
+    )
+  )
 
   tags = var.tags
 }
