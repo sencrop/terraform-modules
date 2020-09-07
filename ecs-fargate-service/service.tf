@@ -4,6 +4,8 @@ locals {
 }
 
 resource "aws_cloudwatch_log_group" "service_log" {
+  count = var.logs != "cloudwatch" ? 1 : 0
+
   name              = "/ecs/${local.cluster_name}/${var.service_name}_task"
   retention_in_days = 3
   tags              = var.tags
@@ -14,69 +16,99 @@ data "aws_iam_role" "ecs_role" {
 }
 
 locals {
-  encoded_vars = jsonencode([
-    for k in keys(var.env_vars) :
-    {
-      name : k,
-      value : var.env_vars[k]
-    }
-  ])
-
   main_task = [{
+    essential : true,
     cpu : 0,
     image : var.image,
     name : var.service_name,
     networkMode : "awsvpc",
     mountPoints : [],
-    ulimits : ( 
+    ulimits : (
       var.docker_ulimits == [] ?
       null :
       var.docker_ulimits
-     ),
+    ),
     volumesFrom : (
       var.side_car_image == "" ?
       [] :
-      [ { 
-          sourceContainer: var.side_car_name,
-          readOnly : true
-        } ]
+      [{
+        sourceContainer : var.side_car_name,
+        readOnly : true
+      }]
     ),
     portMappings : (
       var.port == 0 ?
       [] :
       [{
-          containerPort: var.port,
-          hostPort: var.port,
-          protocol: "tcp"
-       }]
+        containerPort : var.port,
+        hostPort : var.port,
+        protocol : "tcp"
+      }]
     ),
     command : var.command,
     environment : [
-      for k in keys(var.env_vars) :
-      {
-        name : k,
-        value : var.env_vars[k]
-      }
+      for k, v in var.env_vars : { name : k, value : v }
     ],
-    logConfiguration : {
-      logDriver: "awslogs",
-      options: {         
-        awslogs-group : aws_cloudwatch_log_group.service_log.name,
-        awslogs-region: "eu-central-1",
-        awslogs-stream-prefix: "ecs"
-      }
-    }
+    logConfiguration : (
+      var.logs == "cloudwatch" ?
+      local.cloudwatch_logconf :
+      local.datadog_logconf
+    )
   }]
 
+  cloudwatch_logconf = {
+    logDriver : "awslogs",
+    options : {
+      awslogs-group : aws_cloudwatch_log_group.service_log[0].name,
+      awslogs-region : "eu-central-1",
+      awslogs-stream-prefix : "ecs"
+    }
+  }
+
+  datadog_logconf = {
+    logDriver : "awsfirelens",
+    options : {
+      Name : "datadog",
+      apikey : var.datadog_api_key,
+      Host : "http-intake.logs.datadoghq.eu",
+      TLS : "on",
+      provider : "ecs",
+      dd_service : var.service_name,
+      dd_source : var.service_name,
+      dd_message_key : "log",
+      dd_tags : join(",", [for k, v in var.tags : format("%s:%s", k, v)])
+    }
+  }
+
+  fluentbit_task = (
+    var.logs == "cloudwatch" ?
+    [] :
+    [{
+      essential : true,
+      image : "amazon/aws-for-fluent-bit:latest",
+      name : "log_router",
+      firelensConfiguration : {
+        type : "fluentbit",
+        options : {
+          enable-ecs-log-metadata : "true" # must be string
+          # for json
+          # config-file-type: "file",
+          # config-file-value: "/fluent-bit/configs/parse-json.conf"
+        }
+      }
+    }]
+  )
+
   side_car_task = (
-      var.side_car_image == "" ?
-      [] :
-      [{ 
-        image: var.side_car_image,
-        name: var.side_car_name,
-        networkMode: "awsvpc"
-      }] 
-  ) 
+    var.side_car_image == "" ?
+    [] :
+    [{
+      image : var.side_car_image,
+      name : var.side_car_name,
+      networkMode : "awsvpc"
+    }]
+  )
+
 }
 
 resource "aws_iam_role" "task_role" {
@@ -126,8 +158,8 @@ resource "aws_ecs_task_definition" "task" {
   // container definition spec
   // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html
   container_definitions = jsonencode(
-    flatten (
-      [ local.main_task, local.side_car_task ] 
+    flatten(
+      [local.main_task, local.side_car_task, local.fluentbit_task]
     )
   )
 

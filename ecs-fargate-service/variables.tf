@@ -50,17 +50,17 @@ variable "side_car_name" {
 variable "healthcheck_path" {
   default = ""
 }
-variable healthcheck_interval {
+variable "healthcheck_interval" {
   default = 30
 }
-variable healthcheck_grace_period {
+variable "healthcheck_grace_period" {
   default = null
   type    = number
 }
-variable healthcheck_timeout {
+variable "healthcheck_timeout" {
   default = 5
 }
-variable healthcheck_matcher {
+variable "healthcheck_matcher" {
   default = "200-399"
 }
 variable "lb_certificate_arn" {
@@ -78,6 +78,7 @@ variable "enable_public_lb" {
 }
 variable "enable_local_discovery" {
   default = false
+  # TODO validation: if true, it requires to declare other vars as well
 }
 variable "local_discovery_service_name" {
   default = ""
@@ -102,9 +103,17 @@ variable "tags" {
 }
 variable "deregistration_delay" {
   description = "load balancer target group deregistration"
-  default = 300
+  default     = 300
 }
 variable "docker_ulimits" {
   description = "see https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Ulimit.html"
-  default = []
+  default     = []
+}
+variable "logs" {
+  type        = string
+  default     = "cloudwatch"
+  description = "Should be \"cloudwatch\" or \"datadog\"."
+}
+variable "datadog_api_key" {
+  default = ""
 }

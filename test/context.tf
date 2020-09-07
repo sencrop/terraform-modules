@@ -38,3 +38,6 @@ resource "aws_security_group" "test-sg" {
   }
 }
 
+data "aws_ssm_parameter" "datadog_api_key" {
+  name = "/tf/${local.testenv}/datadog/api_key"
+}

@@ -3,10 +3,10 @@ module "test-echo" {
   source = "../ecs-fargate-service"
 
   service_name = "test-echo"
-  image            = "jmalloc/echo-server"
-  cpu              = 256
-  mem              = 512
-  port             = 8080
+  image        = "jmalloc/echo-server"
+  cpu          = 256
+  mem          = 512
+  port         = 8080
 
   ecs_cluster_id = data.terraform_remote_state.common.outputs.main_ecs_cluster_id
   vpc_id         = data.terraform_remote_state.common.outputs.common_vpc_id
@@ -22,9 +22,16 @@ module "test-echo" {
   public_lb_dns_zone  = "infra.sencrop.com."
   public_lb_dns_name  = "test-module"
 
-  enable_local_discovery = false # FIXME : in est, issues with IAM and servicediscovery:CreateService operation
+  enable_local_discovery       = false
+  discovery_namespace_id       = data.terraform_remote_state.common.outputs.service_discovery_namespace_id
+  local_discovery_service_name = "test-echo"
 
   tags = {
     Environment = local.testenv
+    Application = "foo"
   }
+
+  logs            = "datadog"
+  datadog_api_key = data.aws_ssm_parameter.datadog_api_key.value
 }
+
