@@ -117,3 +117,7 @@ variable "logs" {
 variable "datadog_api_key" {
   default = ""
 }
+variable "logs_json" {
+  default = false
+  description = "Wether logs should be parsed as json. Works together with datadog logs."
+}

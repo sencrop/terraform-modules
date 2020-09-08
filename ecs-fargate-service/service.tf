@@ -78,6 +78,18 @@ locals {
     }
   )
 
+  firelensOptions = (
+    var.logs_json ?
+    {
+      enable-ecs-log-metadata : "true", # must be string
+      config-file-type: "file",
+      config-file-value: "/fluent-bit/configs/parse-json.conf"
+    } :
+    {
+      enable-ecs-log-metadata : "true" # must be string
+    }
+  )
+
   fluentbit_task = (
     var.logs == "cloudwatch" ?
     [] :
@@ -87,12 +99,7 @@ locals {
       name : "log_router",
       firelensConfiguration : {
         type : "fluentbit",
-        options : {
-          enable-ecs-log-metadata : "true" # must be string
-          # for json
-          # config-file-type: "file",
-          # config-file-value: "/fluent-bit/configs/parse-json.conf"
-        }
+        options : local.firelensOptions
       }
     }]
   )
