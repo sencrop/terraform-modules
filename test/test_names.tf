@@ -1,8 +1,8 @@
 
-module "test-datadog" {
+module "test-names" {
   source = "../ecs-fargate-service"
 
-  service_name = "test-datadog"
+  service_name = "test-names"
   image        = "jmalloc/echo-server"
   cpu          = 256
   mem          = 512
@@ -15,15 +15,20 @@ module "test-datadog" {
 
   additional_security_groups = [aws_security_group.test-sg.id]
 
-  enable_public_lb       = false
-  enable_local_discovery = false
+  enable_public_lb    = true
+  healthcheck_path    = "/"
+  healthcheck_matcher = "200-499"
+  lb_certificate_arn  = "arn:aws:acm:eu-central-1:812957082909:certificate/b6893e9c-6bc1-4d8b-b845-1604ef1a1704"
+  public_lb_dns_zone  = "infra.sencrop.com."
+  public_lb_dns_name  = "test-module"
+
+  enable_local_discovery       = true
+  discovery_namespace_id       = data.terraform_remote_state.common.outputs.service_discovery_namespace_id
+  local_discovery_service_name = "test-names"
 
   tags = {
     Environment = local.testenv
     Application = "foo"
   }
-
-  logs            = "datadog"
-  datadog_api_key = data.aws_ssm_parameter.datadog_api_key.value
 }
 

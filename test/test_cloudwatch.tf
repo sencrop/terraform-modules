@@ -1,8 +1,8 @@
 
-module "test-datadog" {
+module "test-cloudwatch" {
   source = "../ecs-fargate-service"
 
-  service_name = "test-datadog"
+  service_name = "test-cloudwatch"
   image        = "jmalloc/echo-server"
   cpu          = 256
   mem          = 512

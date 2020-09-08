@@ -4,7 +4,7 @@ locals {
 }
 
 resource "aws_cloudwatch_log_group" "service_log" {
-  count = var.logs != "cloudwatch" ? 1 : 0
+  count = (var.logs == "cloudwatch" ? 1 : 0)
 
   name              = "/ecs/${local.cluster_name}/${var.service_name}_task"
   retention_in_days = 3
@@ -49,36 +49,34 @@ locals {
     environment : [
       for k, v in var.env_vars : { name : k, value : v }
     ],
-    logConfiguration : (
-      var.logs == "cloudwatch" ?
-      local.cloudwatch_logconf :
-      local.datadog_logconf
-    )
+    logConfiguration : local.logConf
   }]
 
-  cloudwatch_logconf = {
-    logDriver : "awslogs",
-    options : {
-      awslogs-group : aws_cloudwatch_log_group.service_log[0].name,
-      awslogs-region : "eu-central-1",
-      awslogs-stream-prefix : "ecs"
+  logConf = (
+    var.logs == "cloudwatch" ?
+    {
+      logDriver : "awslogs",
+      options : {
+        awslogs-group : aws_cloudwatch_log_group.service_log[0].name,
+        awslogs-region : "eu-central-1",
+        awslogs-stream-prefix : "ecs"
+      }
+    } : 
+    {
+      logDriver : "awsfirelens",
+      options : {
+        Name : "datadog",
+        apikey : var.datadog_api_key,
+        Host : "http-intake.logs.datadoghq.eu",
+        TLS : "on",
+        provider : "ecs",
+        dd_service : var.service_name,
+        dd_source : var.service_name,
+        dd_message_key : "log",
+        dd_tags : join(",", [for k, v in var.tags : format("%s:%s", k, v)])
+      }
     }
-  }
-
-  datadog_logconf = {
-    logDriver : "awsfirelens",
-    options : {
-      Name : "datadog",
-      apikey : var.datadog_api_key,
-      Host : "http-intake.logs.datadoghq.eu",
-      TLS : "on",
-      provider : "ecs",
-      dd_service : var.service_name,
-      dd_source : var.service_name,
-      dd_message_key : "log",
-      dd_tags : join(",", [for k, v in var.tags : format("%s:%s", k, v)])
-    }
-  }
+  )
 
   fluentbit_task = (
     var.logs == "cloudwatch" ?
