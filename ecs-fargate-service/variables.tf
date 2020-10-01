@@ -125,3 +125,19 @@ variable "datadog_log_source" {
   default     = "default"
   description = "maps to the datadog ingestion parser"
 }
+variable "enable_api_gw" {
+  default = false
+}
+variable "api_gw_name" {
+  default = {}
+}
+variable "api_gw_cors_configuration" {
+  default = {
+    allow_credentials = true
+    allow_headers     = ["*"]
+    allow_methods     = ["*"]
+    allow_origins     = ["*"]
+    expose_headers    = ["x-api-id"]
+    max_age           = 300
+  }
+}

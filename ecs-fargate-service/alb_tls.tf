@@ -57,7 +57,7 @@ resource "aws_security_group" "lb_to_service" {
 
 
 # create LB
-resource "aws_alb" "lb" {
+resource "aws_lb" "alb" {
   count = var.enable_public_lb ? 1 : 0
 
   name_prefix     = "alb-"
@@ -67,9 +67,9 @@ resource "aws_alb" "lb" {
   tags = var.tags
 }
 
-resource "aws_alb_target_group" "lb" {
+resource "aws_lb_target_group" "alb" {
   count      = var.enable_public_lb ? 1 : 0
-  depends_on = [aws_alb.lb]
+  depends_on = [aws_lb.alb]
 
   name_prefix = "task-"
   port        = 80
@@ -86,17 +86,17 @@ resource "aws_alb_target_group" "lb" {
 }
 
 # Route all traffic from the ALB endpoint to the target group
-resource "aws_alb_listener" "lb" {
+resource "aws_lb_listener" "alb" {
   count = var.enable_public_lb ? 1 : 0
 
-  load_balancer_arn = aws_alb.lb[0].arn
+  load_balancer_arn = aws_lb.alb[0].arn
   port              = 443
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
   certificate_arn   = var.lb_certificate_arn
 
   default_action {
-    target_group_arn = aws_alb_target_group.lb[0].arn
+    target_group_arn = aws_lb_target_group.alb[0].arn
     type             = "forward"
   }
 }
@@ -115,8 +115,8 @@ resource "aws_route53_record" "dns_record" {
   name    = var.public_lb_dns_name
   type    = "CNAME"
   ttl     = "300"
-  records = [aws_alb.lb[0].dns_name]
+  records = [aws_lb.alb[0].dns_name]
 
-  # teerraform tends to mess with records destruction/recreation
+  # terraform tends to mess with records destruction/recreation
   allow_overwrite = true
 }

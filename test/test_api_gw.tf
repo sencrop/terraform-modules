@@ -1,8 +1,8 @@
 
-module "test-datadog" {
+module "test-api-gw" {
   source = "../ecs-fargate-service"
 
-  service_name = "test-datadog"
+  service_name = "test-api-gw"
   image        = "jmalloc/echo-server"
   cpu          = 256
   mem          = 512
@@ -15,18 +15,16 @@ module "test-datadog" {
 
   additional_security_groups = [aws_security_group.test-sg.id]
 
-  enable_public_lb       = false
-  enable_local_discovery = false
+  enable_public_lb = false
+  enable_api_gw = true
+  api_gw_name   = "foo"
+
+  healthcheck_path    = "/"
+  healthcheck_matcher = "200-499"
 
   tags = {
     Environment = local.testenv
     Application = "foo"
   }
-
-  logs            = "datadog"
-  datadog_api_key = data.aws_ssm_parameter.datadog_api_key.value
 }
 
-data "aws_ssm_parameter" "datadog_api_key" {
-  name = "/tf/${local.testenv}/datadog/api_key"
-}

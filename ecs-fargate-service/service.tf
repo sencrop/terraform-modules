@@ -61,7 +61,7 @@ locals {
         awslogs-region : "eu-central-1",
         awslogs-stream-prefix : "ecs"
       }
-    } : 
+    } :
     {
       logDriver : "awsfirelens",
       options : {
@@ -82,8 +82,8 @@ locals {
     var.logs_json ?
     {
       enable-ecs-log-metadata : "true", # must be string
-      config-file-type: "file",
-      config-file-value: "/fluent-bit/configs/parse-json.conf"
+      config-file-type : "file",
+      config-file-value : "/fluent-bit/configs/parse-json.conf"
     } :
     {
       enable-ecs-log-metadata : "true" # must be string
@@ -180,8 +180,11 @@ resource "aws_ecs_service" "service" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    security_groups = concat(aws_security_group.lb_to_service[*].id, var.additional_security_groups[*])
-    subnets         = var.task_subnets
+    security_groups = concat(
+      aws_security_group.lb_to_service[*].id,
+      aws_security_group.nlb_to_service[*].id,
+    var.additional_security_groups[*])
+    subnets = var.task_subnets
   }
 
   health_check_grace_period_seconds = var.enable_public_lb ? var.healthcheck_grace_period : null
@@ -194,7 +197,16 @@ resource "aws_ecs_service" "service" {
   dynamic "load_balancer" {
     for_each = var.enable_public_lb ? [1] : []
     content {
-      target_group_arn = aws_alb_target_group.lb[0].arn
+      target_group_arn = aws_lb_target_group.alb[0].arn
+      container_name   = var.service_name
+      container_port   = var.port
+    }
+  }
+
+  dynamic "load_balancer" {
+    for_each = var.enable_api_gw ? [1] : []
+    content {
+      target_group_arn = aws_lb_target_group.nlb[0].arn
       container_name   = var.service_name
       container_port   = var.port
     }
