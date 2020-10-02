@@ -132,8 +132,9 @@ variable "api_gw_name" {
   default = {}
 }
 variable "api_gw_cors_configuration" {
+  description = "see https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/apigatewayv2_api#allow_credentials"
   default = {
-    allow_credentials = true
+    allow_credentials = false
     allow_headers     = ["*"]
     allow_methods     = ["*"]
     allow_origins     = ["*"]
