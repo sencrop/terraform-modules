@@ -118,6 +118,10 @@ variable "datadog_api_key" {
   default = ""
 }
 variable "logs_json" {
-  default = false
+  default     = false
   description = "Wether logs should be parsed as json. Works together with datadog logs."
+}
+variable "datadog_log_source" {
+  default     = "default"
+  description = "maps to the datadog ingestion parser"
 }
