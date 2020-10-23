@@ -100,7 +100,13 @@ locals {
       firelensConfiguration : {
         type : "fluentbit",
         options : local.firelensOptions
-      }
+      },
+      // below are defaults to avoid updating resources for nothing 
+      mountPoints  = [],
+      portMappings = [],
+      volumesFrom  = [],
+      environment  = [],
+      cpu = 0
     }]
   )
 
@@ -134,7 +140,7 @@ resource "aws_iam_role" "task_role" {
 EOF
 }
 
-resource "aws_iam_role_policy_attachment" "airflow" {
+resource "aws_iam_role_policy_attachment" "custom_policy" {
   count = var.task_role_policy_arn != "" ? 1 : 0
 
   role       = aws_iam_role.task_role.name
