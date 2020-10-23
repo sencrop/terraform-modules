@@ -106,7 +106,8 @@ locals {
       portMappings = [],
       volumesFrom  = [],
       environment  = [],
-      cpu = 0
+      user = "0",
+      cpu  = 0
     }]
   )
 
