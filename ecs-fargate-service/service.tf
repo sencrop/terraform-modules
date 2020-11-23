@@ -132,7 +132,7 @@ locals {
         { name : "DD_API_KEY", value : var.datadog_api_key },
         { name : "DD_SITE", value : "datadoghq.eu" },
         { name : "ECS_FARGATE", value: "true" },
-        { name : "DD_TAGS", value : join(",", [for k, v in var.tags : format("%s:%s", k, v)]) }
+        { name : "DD_TAGS", value : join(" ", [for k, v in var.tags : format("%s:%s", k, v)]) }
       ]
     }] :
     []
