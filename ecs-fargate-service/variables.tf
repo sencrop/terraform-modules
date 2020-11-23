@@ -119,9 +119,13 @@ variable "datadog_api_key" {
 }
 variable "logs_json" {
   default     = false
-  description = "Wether logs should be parsed as json. Works together with datadog logs."
+  description = "Whether logs should be parsed as json. Works together with datadog logs."
 }
 variable "datadog_log_source" {
   default     = "default"
   description = "maps to the datadog ingestion parser"
+}
+variable "enable_datadog_agent" {
+  default = false
+  description = "To enable a side-car with datadog agent to collect Fargate tasks metrics"
 }

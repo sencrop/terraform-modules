@@ -121,6 +121,23 @@ locals {
     }]
   )
 
+  datadog_agent_task = (
+    var.enable_datadog_agent ?
+    [{
+      name : "datadog-agent",
+      image : "datadog/agent:latest",
+      memory : 256,
+      cpu : 0,
+      environment : [
+        { name : "DD_API_KEY", value : var.datadog_api_key },
+        { name : "DD_SITE", value : "datadoghq.eu" },
+        { name : "ECS_FARGATE", value: "true" },
+        { name : "DD_TAGS", value : join(",", [for k, v in var.tags : format("%s:%s", k, v)]) }
+      ]
+    }] :
+    []
+  )
+
 }
 
 resource "aws_iam_role" "task_role" {
@@ -171,7 +188,7 @@ resource "aws_ecs_task_definition" "task" {
   // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html
   container_definitions = jsonencode(
     flatten(
-      [local.main_task, local.side_car_task, local.fluentbit_task]
+      [local.main_task, local.side_car_task, local.fluentbit_task, local.datadog_agent_task]
     )
   )
 
