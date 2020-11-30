@@ -129,3 +129,7 @@ variable "enable_datadog_agent" {
   default = false
   description = "To enable a side-car with datadog agent to collect Fargate tasks metrics"
 }
+variable "public_lb_access_logs_bucket" {
+  description = "Where to put public LB access logs."
+  default = ""
+}

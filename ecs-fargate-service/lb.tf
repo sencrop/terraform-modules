@@ -55,7 +55,6 @@ resource "aws_security_group" "lb_to_service" {
   }
 }
 
-
 # create LB
 resource "aws_alb" "lb" {
   count = var.enable_public_lb ? 1 : 0
@@ -63,6 +62,15 @@ resource "aws_alb" "lb" {
   name_prefix     = "alb-"
   subnets         = var.lb_subnets
   security_groups = [aws_security_group.lb[0].id]
+
+  dynamic "access_logs" {
+    for_each = var.public_lb_access_logs_bucket == "" ? [] : [1]
+    content {
+      bucket  = var.public_lb_access_logs_bucket
+      prefix  = "${var.public_lb_dns_name}.${var.public_lb_dns_zone}"
+      enabled = true
+    }
+  }
 
   tags = var.tags
 }
@@ -76,12 +84,14 @@ resource "aws_alb_target_group" "lb" {
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
   target_type = "ip"
+
   health_check {
     path     = var.healthcheck_path
     interval = var.healthcheck_interval
     timeout  = var.healthcheck_timeout
     matcher  = var.healthcheck_matcher
   }
+
   deregistration_delay = var.deregistration_delay
 }
 
