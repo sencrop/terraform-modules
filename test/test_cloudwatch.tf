@@ -1,5 +1,5 @@
 
-module "test-cloudwatch" {
+module "test_cloudwatch" {
   source = "../ecs-fargate-service"
 
   service_name = "test-cloudwatch"
@@ -23,7 +23,6 @@ module "test-cloudwatch" {
     Application = "foo"
   }
 
-  logs            = "datadog"
-  datadog_api_key = data.aws_ssm_parameter.datadog_api_key.value
+  logs            = "cloudwatch"
 }
 
