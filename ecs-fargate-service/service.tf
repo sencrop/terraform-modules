@@ -159,7 +159,7 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "custom_policy" {
-  count = var.task_role_policy_arn != "" ? 1 : 0
+  count = (var.task_role_policy_arn == "" ? 0 : 1)
 
   role       = aws_iam_role.task_role.name
   policy_arn = var.task_role_policy_arn
@@ -180,9 +180,8 @@ resource "aws_ecs_task_definition" "task" {
   memory = var.mem
 
 
-  # TODO get secrets using special ECS mechanism
-  ## search "secret" in https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html
-
+  # secrets could be fetched using special ECS mechanism
+  ## https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data-parameters.html#secrets-envvar-parameters
 
   // container definition spec
   // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html
@@ -203,7 +202,7 @@ resource "aws_ecs_service" "service" {
   desired_count   = var.desired_tasks
   launch_type     = "FARGATE"
   platform_version = var.platform_version
-  
+
   network_configuration {
     security_groups = concat(aws_security_group.lb_to_service[*].id, var.additional_security_groups[*])
     subnets         = var.task_subnets
