@@ -202,7 +202,8 @@ resource "aws_ecs_service" "service" {
   task_definition = aws_ecs_task_definition.task.arn
   desired_count   = var.desired_tasks
   launch_type     = "FARGATE"
-
+  platform_version = var.platform_version
+  
   network_configuration {
     security_groups = concat(aws_security_group.lb_to_service[*].id, var.additional_security_groups[*])
     subnets         = var.task_subnets

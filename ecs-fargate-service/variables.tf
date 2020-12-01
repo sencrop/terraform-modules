@@ -21,6 +21,10 @@ variable "port" {
 }
 variable "image" {}
 variable "vpc_id" {}
+variable "platform_version" {
+  default = "LATEST"
+  description = "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html"
+}
 variable "desired_tasks" {
   default = 1
 }
