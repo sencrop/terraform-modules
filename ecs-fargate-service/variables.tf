@@ -133,6 +133,10 @@ variable "enable_datadog_agent" {
   default = false
   description = "To enable a side-car with datadog agent to collect Fargate tasks metrics"
 }
+variable "enable_datadog_agent_apm" {
+  default = false
+  description = "To enable APM data collection in datadog agent. See https://docs.datadoghq.com/integrations/ecs_fargate/?tab=fluentbitandfirelens#trace-collection"
+}
 variable "public_lb_access_logs_bucket" {
   description = "Where to put public LB access logs."
   default = ""
