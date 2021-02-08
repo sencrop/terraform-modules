@@ -232,6 +232,7 @@ resource "aws_ecs_service" "service" {
     }
   }
 
+  propagate_tags = "SERVICE"
   tags = var.tags
 }
 
