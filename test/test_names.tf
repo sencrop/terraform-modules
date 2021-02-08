@@ -1,5 +1,5 @@
 
-module "test-names" {
+module "test_names" {
   source = "../ecs-fargate-service"
 
   service_name = "test-names"
@@ -20,7 +20,7 @@ module "test-names" {
   healthcheck_matcher = "200-499"
   lb_certificate_arn  = "arn:aws:acm:eu-central-1:812957082909:certificate/b6893e9c-6bc1-4d8b-b845-1604ef1a1704"
   public_lb_dns_zone  = "infra.sencrop.com."
-  public_lb_dns_name  = "test-module"
+  public_lb_dns_name  = "test-names"
 
   enable_local_discovery       = true
   discovery_namespace_id       = data.terraform_remote_state.common.outputs.service_discovery_namespace_id

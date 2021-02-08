@@ -1,5 +1,5 @@
 
-module "test-datadog_json" {
+module "test_datadog_json" {
   source = "../ecs-fargate-service"
 
   service_name = "test-datadog-json"
