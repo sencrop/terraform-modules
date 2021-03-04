@@ -2,7 +2,9 @@
 
 ## ECS Fargate Service
 
-Deploys a Fargate service on an ECS cluster, with optional public public load-balancer, TLS-termination, private discovery.
+Deploys a Fargate service on an ECS cluster, with optional public load-balancer, TLS-termination, private discovery.
+
+![architecture](ECS_fargate_service_architecture.png)
 
 
 Required (= input variables):
@@ -16,6 +18,7 @@ Capabilities:
 - create associated task from a docker image address (1 task per service)
 - task may have an optional side-car with volumes to mount into the task container
 - logs can be sent to Cloudwatch logs or Datadog (via AWS firelens & fluent-bit)
+- tasks can have an optional datadog agent running
 - service can have an optional public ALB
 - this ALB is given a name in Route53, with TLS termination, and associated https certificate.
 - service can optionally be referenced in service registry for local discovery (that is, in a Route53 DNS private .local zone)
@@ -26,8 +29,9 @@ Capabilities:
 
 
 Outputs:
-- Public LB 
+- ALB details: URL, DNS name and zone
 
 
-TODOs:
+Future improvements:
 - better handling of secrets using https://aws.amazon.com/premiumsupport/knowledge-center/ecs-data-security-container-task/ 
+- more outputs
