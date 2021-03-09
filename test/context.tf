@@ -7,7 +7,7 @@ terraform {
 }
 
 locals {
-  testenv = "preproduction"
+  testenv = "test"
 }
 
 
@@ -16,7 +16,7 @@ data "terraform_remote_state" "common" {
 
   config = {
     bucket = "sencrop-terraform-state"
-    key    = "env:/preproduction/common.tfstate"
+    key    = "env:/${local.testenv}/common.tfstate"
     region = "eu-central-1"
   }
 }
