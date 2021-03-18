@@ -75,110 +75,11 @@ resource "aws_alb" "lb" {
   tags = var.tags
 }
 
-/*resource "aws_wafv2_rule_group" "block-crawlers" {
-  name     = "block-crawlers-rule-${var.service_name}"
-  scope    = "REGIONAL"
-  capacity = 49
-  rule {
-    name     = "rule-1"
-    priority = 1
-
-    action {
-      block {}
-    }
-
-    statement {
-
-      byte_match_statement {
-        positional_constraint = "CONTAINS"
-        search_string         = "openvas-vt"
-      
-
-      field_to_match {
-        single_header {
-          name = "user-agent"
-        }
-      }
-
-      text_transformation {
-        priority = 1
-        type     = "LOWERCASE"
-      }
-      }
-    }
-
-    visibility_config {
-      cloudwatch_metrics_enabled = false
-      metric_name                = "block-crawlers-rule-metric"
-      sampled_requests_enabled   = false
-    }
-  }
-
-  visibility_config {
-    cloudwatch_metrics_enabled = false
-    metric_name                = "block-crawlers-group-metric"
-    sampled_requests_enabled   = false
-  }
-}*/
-
-resource "aws_wafv2_web_acl" "web-acl-crawlers" {
-  name  = "acl-crawlers-${var.service_name}"
-  scope = "REGIONAL"
-  //depends_on = [aws_wafv2_rule_group.block-crawlers]
-
-  default_action {
-    allow {}
-  }
-
-  rule {
-    name     = "block-crawlers"
-    priority = 1
-
-    action {
-      block {}
-    }
-
-    statement {
-      /*rule_group_reference_statement {
-        arn = aws_wafv2_rule_group.block-crawlers.arn
-      }*/
-      byte_match_statement {
-        positional_constraint = "CONTAINS"
-        search_string         = "openvas-vt"
-      
-
-      field_to_match {
-        single_header {
-          name = "user-agent"
-        }
-      }
-
-      text_transformation {
-        priority = 1
-        type     = "LOWERCASE"
-      }
-    }
-    }
-
-    visibility_config {
-      cloudwatch_metrics_enabled = true
-      metric_name                = "block-crawlers-statement"
-      sampled_requests_enabled   = true
-    }
-  }
-
-  visibility_config {
-    cloudwatch_metrics_enabled = false
-    metric_name                = "web-acl-crawlers"
-    sampled_requests_enabled   = false
-  }
-}
-
 resource "aws_wafv2_web_acl_association" "web_acl_association_my_lb" {
   count      = var.enable_public_lb ? 1 : 0
   depends_on = [aws_alb.lb]
   resource_arn = aws_alb.lb[0].arn
-  web_acl_arn  = aws_wafv2_web_acl.web-acl-crawlers.arn
+  web_acl_arn  = var.waf_acl_arn
 }
 
 resource "aws_alb_target_group" "lb" {
