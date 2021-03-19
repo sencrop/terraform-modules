@@ -70,6 +70,9 @@ variable "healthcheck_matcher" {
 variable "lb_certificate_arn" {
   default = ""
 }
+variable "waf_acl_arn" {
+  default = ""
+}
 variable "public_lb_dns_zone" {
   default     = "" # TODO default=null ?
   description = "foo.bar."

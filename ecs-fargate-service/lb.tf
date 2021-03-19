@@ -75,6 +75,13 @@ resource "aws_alb" "lb" {
   tags = var.tags
 }
 
+resource "aws_wafv2_web_acl_association" "web_acl_association_my_lb" {
+  count = var.enable_public_lb && var.waf_acl_arn != "" ? 1 : 0
+  depends_on = [aws_alb.lb]
+  resource_arn = aws_alb.lb[0].arn
+  web_acl_arn  = var.waf_acl_arn
+}
+
 resource "aws_alb_target_group" "lb" {
   count      = var.enable_public_lb ? 1 : 0
   depends_on = [aws_alb.lb]
