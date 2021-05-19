@@ -95,7 +95,7 @@ locals {
     [] :
     [{
       essential : true,
-      image : "amazon/aws-for-fluent-bit:latest",
+      image : "public.ecr.aws/aws-observability/aws-for-fluent-bit:latest",
       name : "log_router",
       firelensConfiguration : {
         type : "fluentbit",
@@ -125,7 +125,7 @@ locals {
     var.enable_datadog_agent ?
     [{
       name : "datadog-agent",
-      image : "datadog/agent:latest",
+      image : "public.ecr.aws/datadog/agent:latest",
       memory : 256,
       cpu : 0,
       environment : [
