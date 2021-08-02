@@ -214,6 +214,7 @@ resource "aws_ecs_service" "service" {
   # Allow external changes without Terraform plan difference
   lifecycle {
     ignore_changes = [desired_count]
+    prevent_destroy = var.prevent_destroy_service
   }
 
   dynamic "load_balancer" {
