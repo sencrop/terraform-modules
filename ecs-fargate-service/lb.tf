@@ -23,6 +23,10 @@ resource "aws_security_group" "lb" {
   }
 
   tags = var.tags
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 # Incoming traffic to the service from LB
@@ -49,7 +53,6 @@ resource "aws_security_group" "lb_to_service" {
 
   tags = var.tags
 
-  // due to dependency bug https://github.com/hashicorp/terraform/issues/8617
   lifecycle {
     create_before_destroy = true
   }
