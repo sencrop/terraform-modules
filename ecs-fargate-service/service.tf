@@ -61,7 +61,7 @@ locals {
         awslogs-region : "eu-central-1",
         awslogs-stream-prefix : "ecs"
       }
-    } : 
+    } :
     {
       logDriver : "awsfirelens",
       options : {
@@ -82,8 +82,8 @@ locals {
     var.logs_json ?
     {
       enable-ecs-log-metadata : "true", # must be string
-      config-file-type: "file",
-      config-file-value: "/fluent-bit/configs/parse-json.conf"
+      config-file-type : "file",
+      config-file-value : "/fluent-bit/configs/parse-json.conf"
     } :
     {
       enable-ecs-log-metadata : "true" # must be string
@@ -106,8 +106,8 @@ locals {
       portMappings = [],
       volumesFrom  = [],
       environment  = [],
-      user = "0",
-      cpu  = 0
+      user         = "0",
+      cpu          = 0
     }]
   )
 
@@ -134,7 +134,8 @@ locals {
         { name : "ECS_FARGATE", value : "true" },
         { name : "DD_TAGS", value : join(" ", [for k, v in var.tags : format("%s:%s", k, v)]) },
         { name : "DD_APM_ENABLED", value : tostring(var.enable_datadog_agent_apm) },
-        { name : "DD_APM_NON_LOCAL_TRAFFIC", value : tostring(var.enable_datadog_non_local_apm) }
+        { name : "DD_APM_NON_LOCAL_TRAFFIC", value : tostring(var.enable_datadog_non_local_apm) },
+        { name : "DD_ENV", value : lower(terraform.workspace) },
       ]
     }] :
     []
@@ -198,11 +199,11 @@ resource "aws_ecs_task_definition" "task" {
 
 # service definition
 resource "aws_ecs_service" "service" {
-  name            = var.service_name
-  cluster         = var.ecs_cluster_id
-  task_definition = aws_ecs_task_definition.task.arn
-  desired_count   = var.desired_tasks
-  launch_type     = "FARGATE"
+  name             = var.service_name
+  cluster          = var.ecs_cluster_id
+  task_definition  = aws_ecs_task_definition.task.arn
+  desired_count    = var.desired_tasks
+  launch_type      = "FARGATE"
   platform_version = var.platform_version
 
   network_configuration {
@@ -234,7 +235,7 @@ resource "aws_ecs_service" "service" {
   }
 
   propagate_tags = "SERVICE"
-  tags = var.tags
+  tags           = var.tags
 }
 
 
