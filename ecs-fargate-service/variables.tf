@@ -140,6 +140,10 @@ variable "enable_datadog_agent_apm" {
   default = false
   description = "To enable APM data collection in datadog agent. See https://docs.datadoghq.com/integrations/ecs_fargate/?tab=fluentbitandfirelens#trace-collection"
 }
+variable "enable_datadog_non_local_apm" {
+  default = false
+  description = "To enable APM data collection in datadog agent with APM features."
+}
 variable "public_lb_access_logs_bucket" {
   description = "Where to put public LB access logs."
   default = ""

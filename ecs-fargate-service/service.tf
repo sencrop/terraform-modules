@@ -133,7 +133,8 @@ locals {
         { name : "DD_SITE", value : "datadoghq.eu" },
         { name : "ECS_FARGATE", value : "true" },
         { name : "DD_TAGS", value : join(" ", [for k, v in var.tags : format("%s:%s", k, v)]) },
-        { name : "DD_APM_ENABLED", value : tostring(var.enable_datadog_agent_apm) }
+        { name : "DD_APM_ENABLED", value : tostring(var.enable_datadog_agent_apm) },
+        { name : "DD_APM_NON_LOCAL_TRAFFIC", value : tostring(var.enable_datadog_non_local_apm) }
       ]
     }] :
     []
