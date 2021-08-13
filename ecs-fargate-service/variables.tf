@@ -22,7 +22,7 @@ variable "port" {
 variable "image" {}
 variable "vpc_id" {}
 variable "platform_version" {
-  default = "LATEST"
+  default     = "LATEST"
   description = "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html"
 }
 variable "desired_tasks" {
@@ -133,18 +133,22 @@ variable "datadog_log_source" {
   description = "maps to the datadog ingestion parser"
 }
 variable "enable_datadog_agent" {
-  default = false
+  default     = false
   description = "To enable a side-car with datadog agent to collect Fargate tasks metrics"
 }
 variable "enable_datadog_agent_apm" {
-  default = false
+  default     = false
   description = "To enable APM data collection in datadog agent. See https://docs.datadoghq.com/integrations/ecs_fargate/?tab=fluentbitandfirelens#trace-collection"
 }
 variable "enable_datadog_non_local_apm" {
-  default = false
+  default     = false
   description = "To enable APM data collection in datadog agent with APM features."
+}
+variable "enable_datadog_logs_injection" {
+  default     = false
+  description = "To inject trace IDs, span IDs, env, service, and version in the logs. See https://docs.datadoghq.com/tracing/connect_logs_and_traces/"
 }
 variable "public_lb_access_logs_bucket" {
   description = "Where to put public LB access logs."
-  default = ""
+  default     = ""
 }
