@@ -136,6 +136,7 @@ locals {
         { name : "DD_APM_ENABLED", value : tostring(var.enable_datadog_agent_apm) },
         { name : "DD_APM_NON_LOCAL_TRAFFIC", value : tostring(var.enable_datadog_non_local_apm) },
         { name : "DD_ENV", value : lower(terraform.workspace) },
+        { name : "DD_LOGS_INJECTION", value : tostring(var.enable_datadog_logs_injection) }
       ]
     }] :
     []
