@@ -95,7 +95,7 @@ locals {
     [] :
     [{
       essential : true,
-      image : "public.ecr.aws/aws-observability/aws-for-fluent-bit:latest",
+      image : "public.ecr.aws/aws-observability/aws-for-fluent-bit:2.19.0",
       name : "log_router",
       firelensConfiguration : {
         type : "fluentbit",
