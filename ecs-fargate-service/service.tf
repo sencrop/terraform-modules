@@ -45,6 +45,14 @@ locals {
         protocol : "tcp"
       }]
     ),
+    healthcheck : (
+      var.enable_public_lb == true ?
+      null :
+      {
+        command : [ "CMD-SHELL", "${var.healthcheck_command} http://localhost:${var.port}${var.healthcheck_path} || exit 1" ],
+        startPeriod : var.healthcheck_grace_period
+      }
+    ),
     command : var.command,
     environment : [
       for k, v in var.env_vars : { name : k, value : v }

@@ -152,3 +152,8 @@ variable "public_lb_access_logs_bucket" {
   description = "Where to put public LB access logs."
   default     = ""
 }
+
+variable "healthcheck_command" {
+  type       = string
+  default    = ""
+}
