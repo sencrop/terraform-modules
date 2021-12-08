@@ -16,6 +16,9 @@ data "aws_iam_role" "ecs_role" {
 }
 
 locals {
+
+  mappings = var.ports == [] ? [var.port] : var.ports
+  
   main_task = [{
     essential : true,
     cpu : 0,
@@ -36,15 +39,9 @@ locals {
         readOnly : true
       }]
     ),
-    portMappings : (
-      var.port == 0 ?
-      [] :
-      [{
-        containerPort : var.port,
-        hostPort : var.port,
-        protocol : "tcp"
-      }]
-    ),
+    portMappings : [
+      for p in mappings : { containerPort : p, hostPort : p,   protocol : "tcp" }
+    ],
     command : var.command,
     environment : [
       for k, v in var.env_vars : { name : k, value : v }
