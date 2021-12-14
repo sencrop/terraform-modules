@@ -40,7 +40,7 @@ locals {
       }]
     ),
     portMappings : [
-      for p in mappings : { containerPort : p, hostPort : p,   protocol : "tcp" }
+      for p in local.mappings : { containerPort : p, hostPort : p,   protocol : "tcp" }
     ],
     command : var.command,
     environment : [

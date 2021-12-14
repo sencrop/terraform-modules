@@ -19,6 +19,9 @@ variable "service_name" {}
 variable "port" {
   default = 0
 }
+variable "ports" {
+  type = list
+}
 variable "image" {}
 variable "vpc_id" {}
 variable "platform_version" {
