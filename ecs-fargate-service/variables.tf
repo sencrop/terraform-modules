@@ -20,7 +20,7 @@ variable "port" {
   default = 0
 }
 variable "ports" {
-  type = list
+  default = []
 }
 variable "image" {}
 variable "vpc_id" {}
