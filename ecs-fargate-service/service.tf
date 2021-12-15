@@ -17,7 +17,7 @@ data "aws_iam_role" "ecs_role" {
 
 locals {
 
-  mappings = var.ports == [] ? [var.port] : var.ports
+  mappings = var.ports == [] ? ( var.port == 0 ? [] : [var.port] ) : var.ports 
   
   main_task = [{
     essential : true,
