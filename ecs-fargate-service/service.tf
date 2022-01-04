@@ -160,7 +160,12 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "custom_policy" {
-  count = (var.task_role_policy_arn == "" ? 0 : 1)
+  # When using a custom policy, you may encounter the following error:
+  #   The "count" value depends on resource attributes that cannot be determined
+  # I didn't find a way to fix this.
+  # The workaround is to create the policy first (using tarraform apply -target=) 
+  # then finalize the attachment to the service
+  count = (var.task_role_policy_arn == null ? 0 : 1)
 
   role       = aws_iam_role.task_role.name
   policy_arn = var.task_role_policy_arn

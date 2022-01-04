@@ -32,7 +32,8 @@ variable "desired_tasks" {
   default = 1
 }
 variable "task_role_policy_arn" {
-  default = ""
+  default = null
+  type = string
 }
 variable "lb_subnets" {}
 variable "task_subnets" {}
