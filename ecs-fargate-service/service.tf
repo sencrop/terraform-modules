@@ -142,7 +142,7 @@ locals {
 }
 
 resource "aws_iam_role" "task_role" {
-  name = var.service_name
+  name = "${var.service_name}-${terraform.workspace}"
   assume_role_policy = jsonencode({
     "Version": "2012-10-17",
     "Statement": [
