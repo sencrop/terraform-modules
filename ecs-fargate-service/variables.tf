@@ -35,7 +35,9 @@ variable "task_role_policy_arn" {
   default = null
   type = string
 }
-variable "lb_subnets" {}
+variable "lb_subnets" {
+  description = "list of subnet IDs for the public LB"
+}
 variable "task_subnets" {}
 variable "ecs_cluster_id" {}
 variable "additional_security_groups" {
@@ -78,7 +80,7 @@ variable "waf_acl_arn" {
   default = ""
 }
 variable "public_lb_dns_zone" {
-  default     = "" # TODO default=null ?
+  default     = "" 
   description = "foo.bar."
 }
 variable "public_lb_dns_name" {
@@ -155,4 +157,22 @@ variable "enable_datadog_logs_injection" {
 variable "public_lb_access_logs_bucket" {
   description = "Where to put public LB access logs."
   default     = ""
+}
+variable "enable_private_lb" {
+  default = false
+}
+variable "lb_private_subnets" {
+  description = "list of subnet IDs for the private LB"
+  default     = []
+}
+variable "private_lb_access_logs_bucket" {
+  description = "Where to put private LB access logs."
+  default     = ""
+}
+variable "private_lb_dns_zone" {
+  default     = "" 
+  description = "foo.bar."
+}
+variable "private_lb_dns_name" {
+  default = ""
 }

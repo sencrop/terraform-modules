@@ -211,11 +211,15 @@ resource "aws_ecs_service" "service" {
   platform_version = var.platform_version
 
   network_configuration {
-    security_groups = concat(aws_security_group.lb_to_service[*].id, var.additional_security_groups[*])
+    security_groups = concat(
+      aws_security_group.lb_to_service[*].id, 
+      aws_security_group.lb_priv_to_service[*].id, 
+      var.additional_security_groups[*]
+    )
     subnets         = var.task_subnets
   }
 
-  health_check_grace_period_seconds = var.enable_public_lb ? var.healthcheck_grace_period : null
+  health_check_grace_period_seconds = (var.enable_public_lb || var.enable_private_lb ) ? var.healthcheck_grace_period : null
 
   # Allow external changes without Terraform plan difference
   lifecycle {
@@ -223,9 +227,9 @@ resource "aws_ecs_service" "service" {
   }
 
   dynamic "load_balancer" {
-    for_each = var.enable_public_lb ? [1] : []
+    for_each = concat(aws_alb_target_group.lb[*].arn, aws_alb_target_group.lb_priv[*].arn)
     content {
-      target_group_arn = aws_alb_target_group.lb[0].arn
+      target_group_arn = load_balancer.value
       container_name   = var.service_name
       container_port   = var.port
     }
