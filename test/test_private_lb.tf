@@ -16,7 +16,11 @@ module "test_private_lb" {
   additional_security_groups = [aws_security_group.test-sg.id]
 
   enable_public_lb = false
-  enable_local_discovery = false
+
+  # testing service with both private lb and local discovery enabled
+  enable_local_discovery       = true
+  discovery_namespace_id       = data.terraform_remote_state.common.outputs.service_discovery_namespace_id
+  local_discovery_service_name = "test-private-lb"
 
   enable_private_lb   = true
   lb_private_subnets  = data.terraform_remote_state.common.outputs.common_vpc_private_subnets
