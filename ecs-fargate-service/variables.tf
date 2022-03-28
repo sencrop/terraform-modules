@@ -57,6 +57,12 @@ variable "side_car_image" {
 variable "side_car_name" {
   default = ""
 }
+variable "availability_sidecar_enable" {
+  default = false
+}
+variable "availability_sidecar_image" {
+  default = "812957082909.dkr.ecr.eu-central-1.amazonaws.com/observability-tools:8c06fd0"
+}
 variable "healthcheck_path" {
   default = ""
 }
