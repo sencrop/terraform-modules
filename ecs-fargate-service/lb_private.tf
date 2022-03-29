@@ -70,7 +70,7 @@ resource "aws_alb" "lb_priv" {
   subnets         = var.lb_private_subnets
   security_groups = [aws_security_group.lb_priv[0].id]
   internal        = true
-  idle_timeout    = 180
+  idle_timeout    = var.private_lb_idle_timeout
 
   dynamic "access_logs" {
     for_each = var.private_lb_access_logs_bucket == "" ? [] : [1]
