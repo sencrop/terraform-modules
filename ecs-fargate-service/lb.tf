@@ -65,6 +65,7 @@ resource "aws_alb" "lb" {
   name_prefix     = "alb-"
   subnets         = var.lb_subnets
   security_groups = [aws_security_group.lb[0].id]
+  idle_timeout    = var.public_lb_idle_timeout
 
   dynamic "access_logs" {
     for_each = var.public_lb_access_logs_bucket == "" ? [] : [1]
