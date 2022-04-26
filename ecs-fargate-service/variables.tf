@@ -159,6 +159,10 @@ variable "enable_datadog_non_local_apm" {
   default     = false
   description = "To enable APM data collection in datadog agent with APM features."
 }
+variable "datadog_apm_ignore_ressources" {
+  default = []
+  description = "List of ressources (span names) to ignore in the APM. See https://docs.datadoghq.com/tracing/guide/ignoring_apm_resources/"
+}
 variable "enable_datadog_logs_injection" {
   default     = false
   description = "To inject trace IDs, span IDs, env, service, and version in the logs. See https://docs.datadoghq.com/tracing/connect_logs_and_traces/"
