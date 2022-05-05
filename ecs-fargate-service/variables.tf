@@ -41,7 +41,7 @@ variable "lb_subnets" {
 variable "task_subnets" {}
 variable "ecs_cluster_id" {}
 variable "additional_security_groups" {
-  description = "ids of groups"
+  description = "additional security groups for service"
   default     = []
 }
 variable "env_vars" {
@@ -191,4 +191,8 @@ variable "private_lb_dns_name" {
 }
 variable "private_lb_idle_timeout" {
   default = 60
+}
+variable "lb_private_additional_security_groups" {
+  description = "additional security groups for private LB"
+  default     = []
 }
