@@ -196,3 +196,6 @@ variable "lb_private_additional_security_groups" {
   description = "additional security groups for private LB"
   default     = []
 }
+variable "task_definition_only" {
+  default = false
+}
