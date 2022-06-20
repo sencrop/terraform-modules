@@ -79,6 +79,9 @@ variable "healthcheck_timeout" {
 variable "healthcheck_matcher" {
   default = "200-399"
 }
+variable "healthcheck_unhealthy_threshold" {
+  default = 3
+}
 variable "lb_certificate_arn" {
   default = ""
 }
