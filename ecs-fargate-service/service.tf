@@ -192,7 +192,7 @@ resource "aws_iam_role_policy_attachment" "custom_policy" {
 resource "aws_ecs_task_definition" "task" {
   depends_on = [aws_security_group.lb_to_service] # via ENI
 
-  family                   = var.service_name
+  family                   = "${var.service_name}-${terraform.workspace}"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   execution_role_arn       = data.aws_iam_role.ecs_role.arn
