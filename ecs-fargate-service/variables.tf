@@ -202,3 +202,8 @@ variable "lb_private_additional_security_groups" {
 variable "task_definition_only" {
   default = false
 }
+variable "datadog_mapper" {
+  default = ""
+  description = "Where to put some inline mappings between metrics emitted by some software and Datadog. Used only for Airflow as of now."
+}
+
