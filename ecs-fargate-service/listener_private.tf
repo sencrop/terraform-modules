@@ -1,14 +1,5 @@
 
 # Incoming traffic to the service from LB
-resource "aws_security_group_rule" "lb_priv_to_service_ingress_legacy_lb" {
-  count = var.enable_private_lb ? 1 : 0
-  security_group_id = aws_security_group.service.id
-  type = "ingress"
-  protocol        = "tcp"
-  from_port       = 80
-  to_port         = 80
-  source_security_group_id = aws_security_group.lb_priv[0].id
-}
 resource "aws_security_group_rule" "lb_priv_to_service_ingress_shared_lb" {
   count = var.enable_private_lb ? 1 : 0
   security_group_id = aws_security_group.service.id

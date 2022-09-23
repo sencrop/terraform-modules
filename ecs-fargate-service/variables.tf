@@ -35,9 +35,6 @@ variable "task_role_policy_arn" {
   default = null
   type = string
 }
-variable "lb_subnets" {
-  description = "list of subnet IDs for the public LB"
-}
 variable "task_subnets" {}
 variable "ecs_cluster_id" {}
 variable "additional_security_groups" {
@@ -85,9 +82,6 @@ variable "healthcheck_unhealthy_threshold" {
 variable "lb_certificate_arn" {
   default = ""
 }
-variable "waf_acl_arn" {
-  default = ""
-}
 variable "public_lb_dns_zone" {
   default     = "" 
   description = "Zone in which the CNAME of the service will be setup, eg. foo.bar."
@@ -95,9 +89,6 @@ variable "public_lb_dns_zone" {
 variable "public_lb_dns_name" {
   default = ""
   description = "CNAME of the service, pointing to LB"
-}
-variable "public_lb_idle_timeout" {
-  default = 60
 }
 variable "enable_public_lb" {
   default = true
@@ -171,20 +162,8 @@ variable "enable_datadog_logs_injection" {
   default     = false
   description = "To inject trace IDs, span IDs, env, service, and version in the logs. See https://docs.datadoghq.com/tracing/connect_logs_and_traces/"
 }
-variable "public_lb_access_logs_bucket" {
-  description = "Where to put public LB access logs."
-  default     = ""
-}
 variable "enable_private_lb" {
   default = false
-}
-variable "lb_private_subnets" {
-  description = "list of subnet IDs for the private LB"
-  default     = []
-}
-variable "private_lb_access_logs_bucket" {
-  description = "Where to put private LB access logs."
-  default     = ""
 }
 variable "private_lb_dns_zone" {
   default     = "" 
@@ -193,13 +172,6 @@ variable "private_lb_dns_zone" {
 variable "private_lb_dns_name" {
   default = ""
   description = "CNAME of the service, pointing to private LB"
-}
-variable "private_lb_idle_timeout" {
-  default = 60
-}
-variable "lb_private_additional_security_groups" {
-  description = "additional security groups for private LB"
-  default     = []
 }
 variable "task_definition_only" {
   default = false
@@ -213,7 +185,6 @@ variable "public_alb_arn" {
   default = ""
   description = "Shared public ALB to attach listeners to"
 }
-
 variable "public_alb_sg_id" {
   default = ""
   description = "SG of the public ALB to allow traffic from it"
@@ -223,7 +194,6 @@ variable "private_alb_arn" {
   default = ""
   description = "Shared private ALB to attach listeners to"
 }
-
 variable "private_alb_sg_id" {
   default = ""
   description = "SG of the private ALB to allow traffic from it"

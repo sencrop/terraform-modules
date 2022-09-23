@@ -10,7 +10,6 @@ module "test_datadog_agent" {
 
   ecs_cluster_id = data.terraform_remote_state.common.outputs.main_ecs_cluster_id
   vpc_id         = data.terraform_remote_state.common.outputs.common_vpc_id
-  lb_subnets     = data.terraform_remote_state.common.outputs.common_vpc_public_subnets
   task_subnets   = data.terraform_remote_state.common.outputs.common_vpc_private_subnets
 
   additional_security_groups = [aws_security_group.test-sg.id]
