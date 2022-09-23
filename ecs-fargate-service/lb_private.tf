@@ -1,5 +1,5 @@
-# Application Load Balancer, in private zone, with dsn name
-#   all these resources are enabled depending on var.enable_private_lb 
+# all there resources are obsolete, and will be removed once all services 
+#   are using shared LBs
 
 data "aws_vpc" "vpc" {
   id = var.vpc_id

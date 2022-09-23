@@ -16,6 +16,8 @@ module "test_names" {
   additional_security_groups = [aws_security_group.test-sg.id]
 
   enable_public_lb    = true
+  public_alb_arn      = data.terraform_remote_state.common.outputs.common_public_alb_arn
+  public_alb_sg_id    = data.terraform_remote_state.common.outputs.common_public_alb_sg_id
   healthcheck_path    = "/"
   healthcheck_matcher = "200-499"
   lb_certificate_arn  = "arn:aws:acm:eu-central-1:812957082909:certificate/b6893e9c-6bc1-4d8b-b845-1604ef1a1704"

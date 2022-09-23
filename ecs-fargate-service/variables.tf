@@ -207,3 +207,12 @@ variable "datadog_mapper" {
   description = "Where to put some inline mappings between metrics emitted by some software and Datadog. Used only for Airflow as of now."
 }
 
+variable "public_alb_arn" {
+  default = ""
+  description = "ALB to attach public listeners to"
+}
+
+variable "public_alb_sg_id" {
+  default = ""
+  description = "SG of the public ALB to allow traffic from it"
+}
