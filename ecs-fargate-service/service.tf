@@ -192,8 +192,6 @@ resource "aws_iam_role_policy_attachment" "custom_policy" {
 
 # task definition
 resource "aws_ecs_task_definition" "task" {
-  depends_on = [aws_security_group.lb_to_service] # via ENI
-
   family                   = "${var.service_name}-${terraform.workspace}"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
@@ -218,6 +216,17 @@ resource "aws_ecs_task_definition" "task" {
   tags = var.tags
 }
 
+resource "aws_security_group" "service" {
+  name_prefix = "svc-"
+  description = "rules for service for ${var.service_name}"
+  vpc_id      = var.vpc_id
+
+  tags = var.tags
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
 # service definition
 resource "aws_ecs_service" "service" {
   count            = var.task_definition_only == true ? 0 : 1
@@ -230,8 +239,7 @@ resource "aws_ecs_service" "service" {
 
   network_configuration {
     security_groups = concat(
-      aws_security_group.lb_to_service[*].id, 
-      aws_security_group.lb_priv_to_service[*].id, 
+      [aws_security_group.service.id], 
       var.additional_security_groups[*]
     )
     subnets         = var.task_subnets

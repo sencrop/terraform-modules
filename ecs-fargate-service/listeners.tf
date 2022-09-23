@@ -1,31 +1,31 @@
 
 # Incoming traffic to the service from LB
-resource "aws_security_group" "lb_to_service" {
+resource "aws_security_group_rule" "lb_to_service_ingress_legacy_lb" {
   count = var.enable_public_lb ? 1 : 0
-
-  name_prefix = "task-"
-  description = "inbound access from public LB for ${var.service_name}"
-  vpc_id      = var.vpc_id
-
-  ingress {
-    protocol        = "tcp"
-    from_port       = var.port
-    to_port         = var.port
-    security_groups = [var.public_alb_sg_id, aws_security_group.lb[0].id]
-  }
-
-  egress {
-    protocol    = "-1"
-    from_port   = 0
-    to_port     = 0
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = var.tags
-
-  lifecycle {
-    create_before_destroy = true
-  }
+  security_group_id = aws_security_group.service.id
+  type = "ingress"
+  protocol        = "tcp"
+  from_port       = var.port
+  to_port         = var.port
+  source_security_group_id = aws_security_group.lb[0].id
+}
+resource "aws_security_group_rule" "lb_to_service_ingress_shared_lb" {
+  count = var.enable_public_lb ? 1 : 0
+  security_group_id = aws_security_group.service.id
+  type = "ingress"
+  protocol        = "tcp"
+  from_port       = var.port
+  to_port         = var.port
+  source_security_group_id = var.public_alb_sg_id
+}
+resource "aws_security_group_rule" "lb_to_service_egress" {
+  count = var.enable_public_lb ? 1 : 0
+  security_group_id = aws_security_group.service.id
+  type = "egress"
+  protocol    = "-1"
+  from_port   = 0
+  to_port     = 0
+  cidr_blocks = ["0.0.0.0/0"]
 }
 
 resource "aws_alb_target_group" "public_lb" {
