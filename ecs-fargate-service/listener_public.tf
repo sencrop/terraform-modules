@@ -96,7 +96,7 @@ resource "aws_route53_record" "dns_record" {
   name    = var.public_lb_dns_name
   type    = "CNAME"
   ttl     = "300"
-  records = [data.shared_public_lb[0].dns_name]
+  records = [data.aws_alb.shared_public_lb[0].dns_name]
 
   # terraform tends to mess with records destruction/recreation
   allow_overwrite = true

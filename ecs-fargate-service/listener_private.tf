@@ -79,7 +79,7 @@ data "aws_route53_zone" "private_lb_dns_zone" {
   count = var.enable_private_lb ? 1 : 0
 
   name         = var.private_lb_dns_zone
-  private_zone = false
+  private_zone = true
 }
 
 data "aws_alb" "shared_private_lb" {
@@ -95,7 +95,7 @@ resource "aws_route53_record" "private_dns_record" {
   name    = var.private_lb_dns_name
   type    = "CNAME"
   ttl     = "300"
-  records = [aws_alb.shared_private_lb[0].dns_name]
+  records = [data.aws_alb.shared_private_lb[0].dns_name]
 
   # terraform tends to mess with records destruction/recreation
   allow_overwrite = true
