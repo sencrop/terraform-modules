@@ -126,22 +126,3 @@ resource "aws_alb_listener" "lb_priv" {
   }
 }
 
-data "aws_route53_zone" "private_lb_dns_zone" {
-  count = var.enable_private_lb ? 1 : 0
-
-  name         = var.private_lb_dns_zone
-  private_zone = true
-}
-
-resource "aws_route53_record" "private_dns_record" {
-  count = var.enable_private_lb ? 1 : 0
-
-  zone_id = data.aws_route53_zone.private_lb_dns_zone[0].zone_id
-  name    = var.private_lb_dns_name
-  type    = "CNAME"
-  ttl     = "300"
-  records = [aws_alb.lb_priv[0].dns_name]
-
-  # teerraform tends to mess with records destruction/recreation
-  allow_overwrite = true
-}

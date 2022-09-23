@@ -18,15 +18,6 @@ resource "aws_security_group_rule" "lb_to_service_ingress_shared_lb" {
   to_port         = var.port
   source_security_group_id = var.public_alb_sg_id
 }
-resource "aws_security_group_rule" "lb_to_service_egress" {
-  count = var.enable_public_lb ? 1 : 0
-  security_group_id = aws_security_group.service.id
-  type = "egress"
-  protocol    = "-1"
-  from_port   = 0
-  to_port     = 0
-  cidr_blocks = ["0.0.0.0/0"]
-}
 
 resource "aws_alb_target_group" "public_lb" {
   count      = var.enable_public_lb ? 1 : 0
@@ -49,7 +40,7 @@ resource "aws_alb_target_group" "public_lb" {
   tags = var.tags
 }
 
-resource "aws_alb_listener" "public_lb_listener" {
+resource "aws_alb_listener" "public_lb" {
   count = var.enable_public_lb ? 1 : 0
 
   load_balancer_arn = var.public_alb_arn
@@ -64,10 +55,10 @@ resource "aws_alb_listener" "public_lb_listener" {
   }
 }
 
-resource "aws_lb_listener_rule" "public_lb_listener" {
+resource "aws_lb_listener_rule" "public_lb" {
   count = var.enable_public_lb ? 1 : 0
 
-  listener_arn = aws_alb_listener.public_lb_listener[0].arn
+  listener_arn = aws_alb_listener.public_lb[0].arn
   
   action {
     type             = "forward"
@@ -76,19 +67,26 @@ resource "aws_lb_listener_rule" "public_lb_listener" {
 
   condition {
     host_header {
-      values = ["${var.public_lb_dns_name}.*"]
+      values = [
+        trimsuffix("${var.public_lb_dns_name}.${var.public_lb_dns_zone}", ".")
+      ]
     }
   }
 
   tags = var.tags
 }
 
-
 data "aws_route53_zone" "public_lb_dns_zone" {
   count = var.enable_public_lb ? 1 : 0
 
   name         = var.public_lb_dns_zone
   private_zone = false
+}
+
+data "aws_alb" "shared_public_lb" {
+  count = var.enable_public_lb ? 1 : 0
+
+  arn = var.public_alb_arn
 }
 
 resource "aws_route53_record" "dns_record" {
@@ -98,7 +96,7 @@ resource "aws_route53_record" "dns_record" {
   name    = var.public_lb_dns_name
   type    = "CNAME"
   ttl     = "300"
-  records = [aws_alb.lb[0].dns_name]
+  records = [data.shared_public_lb[0].dns_name]
 
   # terraform tends to mess with records destruction/recreation
   allow_overwrite = true

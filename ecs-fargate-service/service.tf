@@ -226,6 +226,15 @@ resource "aws_security_group" "service" {
     create_before_destroy = true
   }
 }
+resource "aws_security_group_rule" "service_default_egress" {
+  security_group_id = aws_security_group.service.id
+  type = "egress"
+  protocol    = "-1"
+  from_port   = 0
+  to_port     = 0
+  cidr_blocks = ["0.0.0.0/0"]
+}
+
 
 # service definition
 resource "aws_ecs_service" "service" {
