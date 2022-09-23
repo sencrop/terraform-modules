@@ -30,7 +30,7 @@ module "test_private_lb" {
   private_lb_dns_name  = "test-private-lb"
 
   tags = {
-    Environment = local.testenv
+    Environment = terraform.workspace
     Application = "foo"
   }
 }

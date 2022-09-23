@@ -28,7 +28,7 @@ module "test_names" {
   local_discovery_service_name = "test-names"
 
   tags = {
-    Environment = local.testenv
+    Environment = terraform.workspace
     Application = "foo"
   }
 }

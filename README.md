@@ -35,3 +35,19 @@ Outputs:
 Future improvements:
 - better handling of secrets using https://aws.amazon.com/premiumsupport/knowledge-center/ecs-data-security-container-task/ 
 - more outputs
+
+
+# About tests
+
+- tests are not using a remote backend for state (only local state). You still need to specify a workspace to reference a remote state for pre-existing resources (eg. ECS cluster)
+
+- typical worfklow is to run a single test using resource targeting:
+```
+TF_WORKSPACE=test terraform apply -target=module.test_names
+...
+TF_WORKSPACE=test terraform destroy -target=module.test_names
+```
+
+- always destroy what you do at the end of the tests
+
+

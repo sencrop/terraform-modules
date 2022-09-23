@@ -25,7 +25,7 @@ module "test_access_logs" {
   enable_local_discovery = false
 
   tags = {
-    Environment = local.testenv
+    Environment = terraform.workspace
     Application = "foo"
   }
 

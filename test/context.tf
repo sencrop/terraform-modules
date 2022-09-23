@@ -6,17 +6,12 @@ terraform {
   required_version = "= 0.14.11"
 }
 
-locals {
-  testenv = "test"
-}
-
-
 data "terraform_remote_state" "common" {
   backend = "s3"
 
   config = {
     bucket = "sencrop-terraform-state"
-    key    = "env:/${local.testenv}/common.tfstate"
+    key    = "env:/${terraform.workspace}/common.tfstate"
     region = "eu-central-1"
   }
 }
@@ -34,10 +29,10 @@ resource "aws_security_group" "test-sg" {
   }
 
   tags = {
-    Environment = local.testenv
+    Environment = terraform.workspace
   }
 }
 
 data "aws_ssm_parameter" "datadog_api_key" {
-  name = "/tf/${local.testenv}/datadog/api_key"
+  name = "/tf/${terraform.workspace}/datadog/api_key"
 }
