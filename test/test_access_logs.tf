@@ -14,10 +14,10 @@ module "test_access_logs" {
 
   additional_security_groups = [aws_security_group.test-sg.id]
 
-  enable_public_lb             = true
-  lb_certificate_arn           = "arn:aws:acm:eu-central-1:812957082909:certificate/b6893e9c-6bc1-4d8b-b845-1604ef1a1704"
-  public_lb_dns_zone           = "infra.sencrop.com."
-  public_lb_dns_name           = "test-access-logs"
+  enable_public_lb   = true
+  lb_certificate_arn = "arn:aws:acm:eu-central-1:812957082909:certificate/b6893e9c-6bc1-4d8b-b845-1604ef1a1704"
+  public_lb_dns_zone = "infra.sencrop.com."
+  public_lb_dns_name = "test-access-logs"
 
   enable_local_discovery = false
 

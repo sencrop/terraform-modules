@@ -198,3 +198,38 @@ variable "private_alb_sg_id" {
   default = ""
   description = "SG of the private ALB to allow traffic from it"
 }
+
+#-----------------------------------------------------------------------
+# FIXME to be removed from services and then from here
+variable "lb_subnets" { 
+  description = "deprecated"
+  default = "" 
+}
+variable "waf_acl_arn" { 
+  description = "deprecated"
+  default = "" 
+}
+variable "public_lb_idle_timeout" { 
+  description = "obsdeprecatedolete"
+  default = 60 
+}
+variable "public_lb_access_logs_bucket" { 
+  description = "deprecated"
+  default = "" 
+}
+variable "lb_private_subnets" {
+  description = "deprecated"
+  default     = []
+}
+variable "private_lb_access_logs_bucket" {
+  description = "deprecated"
+  default     = ""
+}
+variable "private_lb_idle_timeout" {
+  description = "deprecated"
+  default = 60
+}
+variable "lb_private_additional_security_groups" {
+  description = "deprecated"
+  default     = []
+}

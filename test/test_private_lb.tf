@@ -21,9 +21,9 @@ module "test_private_lb" {
   discovery_namespace_id       = data.terraform_remote_state.common.outputs.service_discovery_namespace_id
   local_discovery_service_name = "test-private-lb"
 
-  enable_private_lb   = true
-  private_alb_arn     = data.terraform_remote_state.common.outputs.common_priv_alb_arn
-  private_alb_sg_id   = data.terraform_remote_state.common.outputs.common_priv_alb_sg_id
+  enable_private_lb = true
+  private_alb_arn   = data.terraform_remote_state.common.outputs.common_priv_alb_arn
+  private_alb_sg_id = data.terraform_remote_state.common.outputs.common_priv_alb_sg_id
 
   healthcheck_path    = "/"
   healthcheck_matcher = "200-499"
