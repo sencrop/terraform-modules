@@ -1,7 +1,9 @@
 locals {
   # ecs_cluster_id is in arn format
   cluster_name = reverse(split("/", var.ecs_cluster_id))[0]
-  }
+  account_id = data.aws_caller_identity.current.account_id
+  region = data.aws_region.current.name
+}
 
 resource "aws_cloudwatch_log_group" "service_log" {
   count = (var.logs == "cloudwatch" ? 1 : 0)
@@ -11,9 +13,8 @@ resource "aws_cloudwatch_log_group" "service_log" {
   tags              = var.tags
 }
 
-data "aws_iam_role" "ecs_role" {
-  name = "ecsTaskExecutionRole"
-}
+data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
 
 locals {
 
@@ -45,6 +46,9 @@ locals {
     command : var.command,
     environment : [
       for k, v in var.env_vars : { name : k, value : v }
+    ],
+    secrets : [
+      for env_var, ssm_path in var.secrets : { name : env_var, valueFrom : format("arn:aws:ssm:%s:%s:parameter%s", local.region, local.account_id, ssm_path)}
     ],
     logConfiguration : local.logConf
   }]
@@ -160,20 +164,7 @@ locals {
 
 resource "aws_iam_role" "task_role" {
   name = "${var.service_name}-${terraform.workspace}"
-  assume_role_policy = jsonencode({
-    "Version": "2012-10-17",
-    "Statement": [
-      {
-        "Sid": "",
-        "Effect": "Allow",
-        "Principal": {
-          "Service": "ecs-tasks.amazonaws.com"
-        },
-        "Action": "sts:AssumeRole"
-      }
-    ]
-  })
-
+  assume_role_policy = file("${path.module}/policies/assume/ecs-tasks.json")
   tags = var.tags
 }
 
@@ -189,6 +180,17 @@ resource "aws_iam_role_policy_attachment" "custom_policy" {
   policy_arn = var.task_role_policy_arn
 }
 
+resource "aws_iam_role" "execution_role" {
+  name = "${var.service_name}-${terraform.workspace}-task-execution-role"
+  assume_role_policy = file("${path.module}/policies/assume/ecs-tasks.json")
+  managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"]
+}
+
+resource "aws_iam_role_policy" "read-task-secrets" {
+  name = "${var.service_name}-${terraform.workspace}-secrets"
+  role = aws_iam_role.execution_role.id
+  policy = templatefile("${path.module}/policies/read-task-secrets.tftpl", {region: local.region, account_id: local.account_id, ssm_parameters: values(var.secrets)})
+}
 
 # task definition
 resource "aws_ecs_task_definition" "task" {
@@ -197,7 +199,7 @@ resource "aws_ecs_task_definition" "task" {
   family                   = "${var.service_name}-${terraform.workspace}"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  execution_role_arn       = data.aws_iam_role.ecs_role.arn
+  execution_role_arn       = aws_iam_role.execution_role.arn
   task_role_arn            = aws_iam_role.task_role.arn
 
   cpu    = var.cpu

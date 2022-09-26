@@ -25,6 +25,7 @@ Capabilities:
 - service can optionaly be created inside a given security group (for example to be designated as allowed ingress in a DB security group)
 - autoscale can be activated in target tracking mode, on CPU average utilization
 - an IAM policy can be given to the task (for example, to have role-based access to s3)
+- when defined secrets will automatically update the ECS task execution role to allow secret injection
 
 
 
@@ -33,7 +34,6 @@ Outputs:
 
 
 Future improvements:
-- better handling of secrets using https://aws.amazon.com/premiumsupport/knowledge-center/ecs-data-security-container-task/ 
 - more outputs
 
 

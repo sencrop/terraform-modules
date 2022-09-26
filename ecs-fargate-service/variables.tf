@@ -48,6 +48,10 @@ variable "env_vars" {
   default = {}
   type    = map(string)
 }
+variable "secrets" {
+  default = {}
+  type    = map(string)
+}
 variable "command" {
   default = []
 }
