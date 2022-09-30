@@ -24,13 +24,10 @@ module "test_private_lb" {
 
   enable_private_lb   = true
   lb_private_subnets  = data.terraform_remote_state.common.outputs.common_vpc_private_subnets
-  private_alb_arn     = data.terraform_remote_state.common.outputs.common_priv_alb_arn
-  private_alb_sg_id   = data.terraform_remote_state.common.outputs.common_priv_alb_sg_id
-
   healthcheck_path    = "/"
   healthcheck_matcher = "200-499"
-  private_lb_dns_zone = "${terraform.workspace}.priv."
-  private_lb_dns_name = "test-private-lb"
+  private_lb_dns_zone  = "${terraform.workspace}.priv."
+  private_lb_dns_name  = "test-private-lb"
 
   tags = {
     Environment = terraform.workspace

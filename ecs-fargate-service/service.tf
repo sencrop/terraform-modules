@@ -201,6 +201,8 @@ resource "aws_iam_role_policy" "read-task-secrets" {
 
 # task definition
 resource "aws_ecs_task_definition" "task" {
+  depends_on = [aws_security_group.lb_to_service] # via ENI
+
   family                   = "${var.service_name}-${terraform.workspace}"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
@@ -225,26 +227,6 @@ resource "aws_ecs_task_definition" "task" {
   tags = var.tags
 }
 
-resource "aws_security_group" "service" {
-  name_prefix = "svc-"
-  description = "rules for service for ${var.service_name}"
-  vpc_id      = var.vpc_id
-
-  tags = var.tags
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-resource "aws_security_group_rule" "service_default_egress" {
-  security_group_id = aws_security_group.service.id
-  type = "egress"
-  protocol    = "-1"
-  from_port   = 0
-  to_port     = 0
-  cidr_blocks = ["0.0.0.0/0"]
-}
-
-
 # service definition
 resource "aws_ecs_service" "service" {
   count            = var.task_definition_only == true ? 0 : 1
@@ -257,7 +239,8 @@ resource "aws_ecs_service" "service" {
 
   network_configuration {
     security_groups = concat(
-      [aws_security_group.service.id], 
+      aws_security_group.lb_to_service[*].id, 
+      aws_security_group.lb_priv_to_service[*].id, 
       var.additional_security_groups[*]
     )
     subnets         = var.task_subnets
@@ -271,12 +254,7 @@ resource "aws_ecs_service" "service" {
   }
 
   dynamic "load_balancer" {
-    for_each = concat(
-      aws_alb_target_group.lb[*].arn, 
-      aws_alb_target_group.lb_priv[*].arn,
-      aws_alb_target_group.public_lb[*].arn,
-      aws_alb_target_group.private_lb[*].arn
-    )
+    for_each = concat(aws_alb_target_group.lb[*].arn, aws_alb_target_group.lb_priv[*].arn)
     content {
       target_group_arn = load_balancer.value
       container_name   = var.service_name

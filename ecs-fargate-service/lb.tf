@@ -1,6 +1,5 @@
-# all there resources are obsolete, and will be removed once all services 
-#   are using shared LBs
-
+# Application Load Balancer, in public zone, with https endpoint and publing name
+#   all these resources are enabled depending on var.enable_public_lb 
 
 resource "aws_security_group" "lb" {
   count = var.enable_public_lb ? 1 : 0
@@ -30,6 +29,34 @@ resource "aws_security_group" "lb" {
   }
 }
 
+# Incoming traffic to the service from LB
+resource "aws_security_group" "lb_to_service" {
+  count = var.enable_public_lb ? 1 : 0
+
+  name_prefix = "task-"
+  description = "inbound access from the LB for ${var.service_name}"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    protocol        = "tcp"
+    from_port       = var.port
+    to_port         = var.port
+    security_groups = [aws_security_group.lb[0].id]
+  }
+
+  egress {
+    protocol    = "-1"
+    from_port   = 0
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = var.tags
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
 
 # create LB
 resource "aws_alb" "lb" {
@@ -95,3 +122,22 @@ resource "aws_alb_listener" "lb" {
   }
 }
 
+data "aws_route53_zone" "public_lb_dns_zone" {
+  count = var.enable_public_lb ? 1 : 0
+
+  name         = var.public_lb_dns_zone
+  private_zone = false
+}
+
+resource "aws_route53_record" "dns_record" {
+  count = var.enable_public_lb ? 1 : 0
+
+  zone_id = data.aws_route53_zone.public_lb_dns_zone[0].zone_id
+  name    = var.public_lb_dns_name
+  type    = "CNAME"
+  ttl     = "300"
+  records = [aws_alb.lb[0].dns_name]
+
+  # teerraform tends to mess with records destruction/recreation
+  allow_overwrite = true
+}

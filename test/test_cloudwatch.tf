@@ -23,6 +23,6 @@ module "test_cloudwatch" {
     Application = "foo"
   }
 
-  logs = "cloudwatch"
+  logs            = "cloudwatch"
 }
 
