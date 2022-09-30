@@ -94,10 +94,11 @@ variable "waf_acl_arn" {
 }
 variable "public_lb_dns_zone" {
   default     = "" 
-  description = "foo.bar."
+  description = "Zone in which the CNAME of the service will be setup, eg. foo.bar."
 }
 variable "public_lb_dns_name" {
   default = ""
+  description = "CNAME of the service, pointing to LB"
 }
 variable "public_lb_idle_timeout" {
   default = 60
@@ -191,10 +192,11 @@ variable "private_lb_access_logs_bucket" {
 }
 variable "private_lb_dns_zone" {
   default     = "" 
-  description = "foo.bar."
+  description = "Zone in which the CNAME of the service will be setup, eg. foo.bar."
 }
 variable "private_lb_dns_name" {
   default = ""
+  description = "CNAME of the service, pointing to private LB"
 }
 variable "private_lb_idle_timeout" {
   default = 60
@@ -211,3 +213,22 @@ variable "datadog_mapper" {
   description = "Where to put some inline mappings between metrics emitted by some software and Datadog. Used only for Airflow as of now."
 }
 
+variable "public_alb_arn" {
+  default = ""
+  description = "Shared public ALB to attach listeners to"
+}
+
+variable "public_alb_sg_id" {
+  default = ""
+  description = "SG of the public ALB to allow traffic from it"
+}
+
+variable "private_alb_arn" {
+  default = ""
+  description = "Shared private ALB to attach listeners to"
+}
+
+variable "private_alb_sg_id" {
+  default = ""
+  description = "SG of the private ALB to allow traffic from it"
+}

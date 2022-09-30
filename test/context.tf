@@ -36,3 +36,4 @@ resource "aws_security_group" "test-sg" {
 data "aws_ssm_parameter" "datadog_api_key" {
   name = "/tf/${terraform.workspace}/datadog/api_key"
 }
+
