@@ -145,7 +145,7 @@ locals {
     var.enable_datadog_agent ?
     [{
       name : "datadog-agent",
-      image : "public.ecr.aws/datadog/agent:latest",
+      image : var.datadog_agent_image_tag,
       memory : 256,
       cpu : 0,
       environment : [
