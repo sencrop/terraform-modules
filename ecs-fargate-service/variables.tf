@@ -71,6 +71,11 @@ variable "datadog_agent_image_tag" {
   default = "public.ecr.aws/datadog/agent:latest"
   type    = string
 }
+variable "collect_datadog_agent_logs"{
+  default = false
+  type    = bool
+}
+
 variable "healthcheck_path" {
   default = ""
 }
