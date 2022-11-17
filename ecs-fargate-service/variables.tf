@@ -67,6 +67,15 @@ variable "availability_sidecar_enable" {
 variable "availability_sidecar_image" {
   default = "812957082909.dkr.ecr.eu-central-1.amazonaws.com/observability-tools:8c06fd0"
 }
+variable "datadog_agent_image_tag" {
+  default = "public.ecr.aws/datadog/agent:latest"
+  type    = string
+}
+variable "collect_datadog_agent_logs"{
+  default = false
+  type    = bool
+}
+
 variable "healthcheck_path" {
   default = ""
 }

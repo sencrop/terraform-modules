@@ -145,7 +145,7 @@ locals {
     var.enable_datadog_agent ?
     [{
       name : "datadog-agent",
-      image : "public.ecr.aws/datadog/agent:latest",
+      image : var.datadog_agent_image_tag,
       memory : 256,
       cpu : 0,
       environment : [
@@ -160,7 +160,21 @@ locals {
         { name : "DD_LOGS_INJECTION", value : tostring(var.enable_datadog_logs_injection) },
         { name : "DD_SERVICE", value: var.service_name},
         { name : "DD_DOGSTATSD_MAPPER_PROFILES", value: var.datadog_mapper }
-              ]
+      ],
+      logConfiguration: var.collect_datadog_agent_logs ? {
+      logDriver : "awsfirelens",
+      options : {
+        Name : "datadog",
+        apikey : var.datadog_api_key,
+        Host : "http-intake.logs.datadoghq.eu",
+        TLS : "on",
+        provider : "ecs",
+        dd_service : var.service_name,
+        dd_source : "datadog-agent",
+        dd_message_key : "log",
+        dd_tags : join(",", [for k, v in var.tags : format("%s:%s", k, v)])
+        }
+      }: null
     }] :
     []
   )
