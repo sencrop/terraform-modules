@@ -219,4 +219,13 @@ variable "datadog_mapper" {
   default     = ""
   description = "Where to put some inline mappings between metrics emitted by some software and Datadog. Used only for Airflow as of now."
 }
-
+variable "git_repository_url" {
+  description = "the url of the git repository where the code lives, used to link traces to the code in datadog"
+  default     = ""
+  type        = string
+}
+variable "git_commit_sha" {
+  description = "the full commit sha of the code version currently deployed, used to link traces to the code in datadog"
+  default     = ""
+  type        = string
+}

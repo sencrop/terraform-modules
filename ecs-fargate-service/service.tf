@@ -4,6 +4,8 @@ locals {
   account_id           = data.aws_caller_identity.current.account_id
   region               = data.aws_region.current.name
   needs_execution_role = (length(var.secrets) > 0 ? true : false)
+  git_tags = (var.git_repository_url != ""  && var.git_commit_sha != "" ? [format("git.commit.sha:%s", var.git_commit_sha), format("git.repository_url:%s", var.git_repository_url)] : [])
+  dd_tags = [for k, v in var.tags : format("%s:%s", k, v)]
 }
 
 resource "aws_cloudwatch_log_group" "service_log" {
@@ -79,7 +81,7 @@ locals {
         dd_service : var.service_name,
         dd_source : var.datadog_log_source,
         dd_message_key : "log",
-        dd_tags : join(",", [for k, v in var.tags : format("%s:%s", k, v)])
+        dd_tags : join(",", local.dd_tags)
       }
     }
   )
@@ -152,7 +154,7 @@ locals {
         { name : "DD_API_KEY", value : var.datadog_api_key },
         { name : "DD_SITE", value : "datadoghq.eu" },
         { name : "ECS_FARGATE", value : "true" },
-        { name : "DD_TAGS", value : join(" ", [for k, v in var.tags : format("%s:%s", k, v)]) },
+        { name : "DD_TAGS", value : join(" ", concat(local.dd_tags, local.git_tags)) },
         { name : "DD_APM_ENABLED", value : tostring(var.enable_datadog_agent_apm) },
         { name : "DD_APM_IGNORE_RESOURCES", value : join(",", var.datadog_apm_ignore_ressources) },
         { name : "DD_APM_NON_LOCAL_TRAFFIC", value : tostring(var.enable_datadog_non_local_apm) },
@@ -172,7 +174,7 @@ locals {
           dd_service : var.service_name,
           dd_source : "datadog-agent",
           dd_message_key : "log",
-          dd_tags : join(",", [for k, v in var.tags : format("%s:%s", k, v)])
+          dd_tags : join(",", local.dd_tags)
         }
       } : null
     }] :
