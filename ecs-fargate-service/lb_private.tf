@@ -20,12 +20,12 @@ resource "aws_security_group" "lb_priv" {
   }
 
   ingress {
-    protocol    = "tcp"
-    from_port   = 80
-    to_port     = 80
+    protocol        = "tcp"
+    from_port       = 80
+    to_port         = 80
     security_groups = var.lb_private_additional_security_groups
   }
-  
+
   egress {
     from_port   = 0
     to_port     = 0

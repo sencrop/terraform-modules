@@ -3,7 +3,7 @@ output "url" {
 }
 
 output "alb_zone_id" {
-  value = (var.enable_public_lb ? aws_alb.lb[0].zone_id : "") 
+  value = (var.enable_public_lb ? aws_alb.lb[0].zone_id : "")
 }
 
 output "alb_dns_name" {

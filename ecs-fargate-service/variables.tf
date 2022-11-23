@@ -33,7 +33,7 @@ variable "desired_tasks" {
 }
 variable "task_role_policy_arn" {
   default = null
-  type = string
+  type    = string
 }
 variable "lb_subnets" {
   description = "list of subnet IDs for the public LB"
@@ -71,7 +71,7 @@ variable "datadog_agent_image_tag" {
   default = "public.ecr.aws/datadog/agent:latest"
   type    = string
 }
-variable "collect_datadog_agent_logs"{
+variable "collect_datadog_agent_logs" {
   default = false
   type    = bool
 }
@@ -102,7 +102,7 @@ variable "waf_acl_arn" {
   default = ""
 }
 variable "public_lb_dns_zone" {
-  default     = "" 
+  default     = ""
   description = "foo.bar."
 }
 variable "public_lb_dns_name" {
@@ -176,7 +176,7 @@ variable "enable_datadog_non_local_apm" {
   description = "To enable APM data collection in datadog agent with APM features."
 }
 variable "datadog_apm_ignore_ressources" {
-  default = []
+  default     = []
   description = "List of ressources (span names) to ignore in the APM. See https://docs.datadoghq.com/tracing/guide/ignoring_apm_resources/"
 }
 variable "enable_datadog_logs_injection" {
@@ -199,7 +199,7 @@ variable "private_lb_access_logs_bucket" {
   default     = ""
 }
 variable "private_lb_dns_zone" {
-  default     = "" 
+  default     = ""
   description = "foo.bar."
 }
 variable "private_lb_dns_name" {
@@ -216,7 +216,7 @@ variable "task_definition_only" {
   default = false
 }
 variable "datadog_mapper" {
-  default = ""
+  default     = ""
   description = "Where to put some inline mappings between metrics emitted by some software and Datadog. Used only for Airflow as of now."
 }
 

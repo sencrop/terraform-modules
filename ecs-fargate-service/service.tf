@@ -1,8 +1,8 @@
 locals {
   # ecs_cluster_id is in arn format
-  cluster_name = reverse(split("/", var.ecs_cluster_id))[0]
-  account_id = data.aws_caller_identity.current.account_id
-  region = data.aws_region.current.name
+  cluster_name         = reverse(split("/", var.ecs_cluster_id))[0]
+  account_id           = data.aws_caller_identity.current.account_id
+  region               = data.aws_region.current.name
   needs_execution_role = (length(var.secrets) > 0 ? true : false)
 }
 
@@ -23,8 +23,8 @@ data "aws_region" "current" {}
 
 locals {
 
-  mappings = var.ports == [] ? ( var.port == 0 ? [] : [var.port] ) : var.ports 
-  
+  mappings = var.ports == [] ? (var.port == 0 ? [] : [var.port]) : var.ports
+
   main_task = [{
     essential : true,
     cpu : 0,
@@ -46,14 +46,14 @@ locals {
       }]
     ),
     portMappings : [
-      for p in local.mappings : { containerPort : p, hostPort : p,   protocol : "tcp" }
+      for p in local.mappings : { containerPort : p, hostPort : p, protocol : "tcp" }
     ],
     command : var.command,
     environment : [
       for k, v in var.env_vars : { name : k, value : v }
     ],
     secrets : [
-      for env_var, ssm_path in var.secrets : { name : env_var, valueFrom : format("arn:aws:ssm:%s:%s:parameter%s", local.region, local.account_id, ssm_path)}
+      for env_var, ssm_path in var.secrets : { name : env_var, valueFrom : format("arn:aws:ssm:%s:%s:parameter%s", local.region, local.account_id, ssm_path) }
     ],
     logConfiguration : local.logConf
   }]
@@ -154,27 +154,27 @@ locals {
         { name : "ECS_FARGATE", value : "true" },
         { name : "DD_TAGS", value : join(" ", [for k, v in var.tags : format("%s:%s", k, v)]) },
         { name : "DD_APM_ENABLED", value : tostring(var.enable_datadog_agent_apm) },
-        { name : "DD_APM_IGNORE_RESOURCES", value : join(",", var.datadog_apm_ignore_ressources)},
+        { name : "DD_APM_IGNORE_RESOURCES", value : join(",", var.datadog_apm_ignore_ressources) },
         { name : "DD_APM_NON_LOCAL_TRAFFIC", value : tostring(var.enable_datadog_non_local_apm) },
         { name : "DD_ENV", value : lower(terraform.workspace) },
         { name : "DD_LOGS_INJECTION", value : tostring(var.enable_datadog_logs_injection) },
-        { name : "DD_SERVICE", value: var.service_name},
-        { name : "DD_DOGSTATSD_MAPPER_PROFILES", value: var.datadog_mapper }
+        { name : "DD_SERVICE", value : var.service_name },
+        { name : "DD_DOGSTATSD_MAPPER_PROFILES", value : var.datadog_mapper }
       ],
-      logConfiguration: var.collect_datadog_agent_logs ? {
-      logDriver : "awsfirelens",
-      options : {
-        Name : "datadog",
-        apikey : var.datadog_api_key,
-        Host : "http-intake.logs.datadoghq.eu",
-        TLS : "on",
-        provider : "ecs",
-        dd_service : var.service_name,
-        dd_source : "datadog-agent",
-        dd_message_key : "log",
-        dd_tags : join(",", [for k, v in var.tags : format("%s:%s", k, v)])
+      logConfiguration : var.collect_datadog_agent_logs ? {
+        logDriver : "awsfirelens",
+        options : {
+          Name : "datadog",
+          apikey : var.datadog_api_key,
+          Host : "http-intake.logs.datadoghq.eu",
+          TLS : "on",
+          provider : "ecs",
+          dd_service : var.service_name,
+          dd_source : "datadog-agent",
+          dd_message_key : "log",
+          dd_tags : join(",", [for k, v in var.tags : format("%s:%s", k, v)])
         }
-      }: null
+      } : null
     }] :
     []
   )
@@ -182,9 +182,9 @@ locals {
 }
 
 resource "aws_iam_role" "task_role" {
-  name = "${var.service_name}-${terraform.workspace}"
+  name               = "${var.service_name}-${terraform.workspace}"
   assume_role_policy = file("${path.module}/policies/assume/ecs-tasks.json")
-  tags = var.tags
+  tags               = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "custom_policy" {
@@ -200,17 +200,17 @@ resource "aws_iam_role_policy_attachment" "custom_policy" {
 }
 
 resource "aws_iam_role" "execution_role" {
-  count = (local.needs_execution_role ? 1 : 0)
-  name = "${var.service_name}-${terraform.workspace}-task-execution-role"
-  assume_role_policy = file("${path.module}/policies/assume/ecs-tasks.json")
+  count               = (local.needs_execution_role ? 1 : 0)
+  name                = "${var.service_name}-${terraform.workspace}-task-execution-role"
+  assume_role_policy  = file("${path.module}/policies/assume/ecs-tasks.json")
   managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"]
 }
 
 resource "aws_iam_role_policy" "read-task-secrets" {
-  count = (length(var.secrets) > 0 ? 1 : 0)
-  name = "${var.service_name}-${terraform.workspace}-secrets"
-  role = aws_iam_role.execution_role[0].id
-  policy = templatefile("${path.module}/policies/read-task-secrets.tftpl", {region: local.region, account_id: local.account_id, ssm_parameters: values(var.secrets)})
+  count  = (length(var.secrets) > 0 ? 1 : 0)
+  name   = "${var.service_name}-${terraform.workspace}-secrets"
+  role   = aws_iam_role.execution_role[0].id
+  policy = templatefile("${path.module}/policies/read-task-secrets.tftpl", { region : local.region, account_id : local.account_id, ssm_parameters : values(var.secrets) })
 }
 
 # task definition
@@ -253,14 +253,14 @@ resource "aws_ecs_service" "service" {
 
   network_configuration {
     security_groups = concat(
-      aws_security_group.lb_to_service[*].id, 
-      aws_security_group.lb_priv_to_service[*].id, 
+      aws_security_group.lb_to_service[*].id,
+      aws_security_group.lb_priv_to_service[*].id,
       var.additional_security_groups[*]
     )
-    subnets         = var.task_subnets
+    subnets = var.task_subnets
   }
 
-  health_check_grace_period_seconds = (var.enable_public_lb || var.enable_private_lb ) ? var.healthcheck_grace_period : null
+  health_check_grace_period_seconds = (var.enable_public_lb || var.enable_private_lb) ? var.healthcheck_grace_period : null
 
   # Allow external changes without Terraform plan difference
   lifecycle {
