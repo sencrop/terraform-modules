@@ -188,15 +188,12 @@ resource "aws_iam_role" "task_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "custom_policy" {
-  # When using a custom policy, you may encounter the following error:
-  #   The "count" value depends on resource attributes that cannot be determined
-  # I didn't find a way to fix this.
-  # The workaround is to create the policy first (using tarraform apply -target=) 
-  # then finalize the attachment to the service
-  count = (var.task_role_policy_arn == null ? 0 : 1)
-
+  # The "for_each" value depends on resource attributes that cannot be determined until apply,
+  # so Terraform cannot predict how many instances will be created.
+  # To work around this, use the -target argument to first apply only the resources that the for_each depends on.
+  for_each   = toset(var.task_role_policies_arn)
   role       = aws_iam_role.task_role.name
-  policy_arn = var.task_role_policy_arn
+  policy_arn = each.value
 }
 
 resource "aws_iam_role" "execution_role" {

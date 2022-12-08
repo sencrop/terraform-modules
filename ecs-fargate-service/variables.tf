@@ -31,9 +31,9 @@ variable "platform_version" {
 variable "desired_tasks" {
   default = 1
 }
-variable "task_role_policy_arn" {
+variable "task_role_policies_arn" {
   default = null
-  type    = string
+  type    = list
 }
 variable "lb_subnets" {
   description = "list of subnet IDs for the public LB"
