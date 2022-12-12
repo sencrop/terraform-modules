@@ -51,3 +51,18 @@ TF_WORKSPACE=test terraform destroy -target=module.test_names
 - always destroy what you do at the end of the tests
 
 
+
+## ECR repository
+
+Configure an Elastic Container Registry with the standard lifecycle policy which will:
+
+- keep the last 25 production build
+- keep the last 50 tagged build (mostly preproduction build)
+- expire any untagged image after 7 days
+
+```hcl
+module "image_repository" {
+  source = "github.com/sencrop/terraform-modules//ecr-repository"
+  name   = "myimage"
+}
+```
