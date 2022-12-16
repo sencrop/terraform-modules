@@ -183,6 +183,21 @@ variable "enable_datadog_logs_injection" {
   default     = false
   description = "To inject trace IDs, span IDs, env, service, and version in the logs. See https://docs.datadoghq.com/tracing/connect_logs_and_traces/"
 }
+variable "enable_datadog_src_code_integration" {
+  type        = bool
+  default     = false
+  description = "Enable the (APM) source code integration, commit_sha and repository_url should be defined as well"
+}
+variable "commit_sha" {
+  type = string
+  default = ""
+  description = "git commit sha of the configured service version"
+}
+variable "repository_url" {
+  type = string
+  default = ""
+  description = "http url of the git repository"
+}
 variable "public_lb_access_logs_bucket" {
   description = "Where to put public LB access logs."
   default     = ""

@@ -141,6 +141,8 @@ locals {
     }]
   )
 
+  dd_src_code_integration_tags = var.enable_datadog_src_code_integration ? {"git.commit.sha" = var.commit_sha, "git.repository_url" = var.repository_url} : {}
+
   datadog_agent_task = (
     var.enable_datadog_agent ?
     [{
@@ -152,7 +154,7 @@ locals {
         { name : "DD_API_KEY", value : var.datadog_api_key },
         { name : "DD_SITE", value : "datadoghq.eu" },
         { name : "ECS_FARGATE", value : "true" },
-        { name : "DD_TAGS", value : join(" ", [for k, v in var.tags : format("%s:%s", k, v)]) },
+        { name : "DD_TAGS", value : join(" ", [for k, v in merge(var.tags, local.dd_src_code_integration_tags) : format("%s:%s", k, v)]) },
         { name : "DD_APM_ENABLED", value : tostring(var.enable_datadog_agent_apm) },
         { name : "DD_APM_IGNORE_RESOURCES", value : join(",", var.datadog_apm_ignore_ressources) },
         { name : "DD_APM_NON_LOCAL_TRAFFIC", value : tostring(var.enable_datadog_non_local_apm) },
