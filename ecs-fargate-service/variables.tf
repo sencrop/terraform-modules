@@ -16,6 +16,12 @@ Between 8192 and 30720 in increments of 1024 for cpu = 4096
 EOS
 }
 variable "service_name" {}
+// currently only used to set DD_VERSION
+// TODO: make it mandatory once it is set everywhere
+variable "app_version" {
+  type = string
+  default = ""
+}
 variable "port" {
   default = 0
 }
@@ -139,6 +145,12 @@ variable "autoscale_cpu_target" {
 variable "tags" {
   default = {}
 }
+variable "dd_tags" {
+  default = {}
+  type = map(string)
+  description = "tags added to the DD_TAGS environment variable of the main task"
+}
+
 variable "deregistration_delay" {
   description = "load balancer target group deregistration"
   default     = 300
@@ -182,6 +194,21 @@ variable "datadog_apm_ignore_ressources" {
 variable "enable_datadog_logs_injection" {
   default     = false
   description = "To inject trace IDs, span IDs, env, service, and version in the logs. See https://docs.datadoghq.com/tracing/connect_logs_and_traces/"
+}
+variable "enable_datadog_src_code_integration" {
+  type        = bool
+  default     = false
+  description = "Enable the (APM) source code integration, commit_sha and repository_url should be defined as well"
+}
+variable "commit_sha" {
+  type = string
+  default = ""
+  description = "git commit sha of the configured service version"
+}
+variable "repository_url" {
+  type = string
+  default = ""
+  description = "http url of the git repository"
 }
 variable "public_lb_access_logs_bucket" {
   description = "Where to put public LB access logs."

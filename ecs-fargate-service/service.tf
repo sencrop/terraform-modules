@@ -24,6 +24,17 @@ data "aws_region" "current" {}
 locals {
 
   mappings = var.ports == [] ? (var.port == 0 ? [] : [var.port]) : var.ports
+  dd_src_code_integration_tags = var.enable_datadog_src_code_integration ? {"git.commit.sha" = var.commit_sha, "git.repository_url" = var.repository_url} : {}
+
+  default_env_vars = {
+    DD_SERVICE           = var.service_name
+    DD_VERSION           = var.app_version
+    DD_ENV               = lower(terraform.workspace)
+    DD_TAGS              = join(" ", [for k, v in merge(local.dd_src_code_integration_tags, var.dd_tags) : format("%s:%s", k, v)])
+  }
+
+  main_task_env_vars = merge(local.default_env_vars, var.env_vars)
+
 
   main_task = [{
     essential : true,
@@ -50,7 +61,7 @@ locals {
     ],
     command : var.command,
     environment : [
-      for k, v in var.env_vars : { name : k, value : v }
+      for k, v in local.main_task_env_vars : { name : k, value : v }
     ],
     secrets : [
       for env_var, ssm_path in var.secrets : { name : env_var, valueFrom : format("arn:aws:ssm:%s:%s:parameter%s", local.region, local.account_id, ssm_path) }
@@ -79,7 +90,7 @@ locals {
         dd_service : var.service_name,
         dd_source : var.datadog_log_source,
         dd_message_key : "log",
-        dd_tags : join(",", [for k, v in var.tags : format("%s:%s", k, v)])
+        dd_tags : join(",", [for k, v in merge({version: var.app_version}, var.tags) : format("%s:%s", k, v)])
       }
     }
   )
