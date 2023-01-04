@@ -15,11 +15,12 @@
         },
         {
             "rulePriority": 2,
-            "description": "Keep last 50 tagged images",
+            "description": "Expire untagged images older than 7 days",
             "selection": {
-                "tagStatus": "tagged",
-                "countType": "imageCountMoreThan",
-                "countNumber": 50
+                "tagStatus": "untagged",
+                "countType": "sinceImagePushed",
+                "countUnit": "days",
+                "countNumber":7
             },
             "action": {
                 "type": "expire"
@@ -27,12 +28,11 @@
         },
         {
             "rulePriority": 3,
-            "description": "Expire untagged images older than 7 days",
+            "description": "Keep at most 100 images",
             "selection": {
-                "tagStatus": "untagged",
-                "countType": "sinceImagePushed",
-                "countUnit": "days",
-                "countNumber":7
+                "tagStatus": "any",
+                "countType": "imageCountMoreThan",
+                "countNumber": 100
             },
             "action": {
                 "type": "expire"
