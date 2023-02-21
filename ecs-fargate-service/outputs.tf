@@ -13,3 +13,7 @@ output "alb_dns_name" {
 output "ecs_task_role_arn" {
   value = aws_iam_role.task_role.arn
 }
+
+output "ecs_task_definition_arn" {
+  value = aws_ecs_task_definition.task.arn
+}
