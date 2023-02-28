@@ -23,6 +23,11 @@ variable "ports" {
   default = []
 }
 variable "image" {}
+// TODO: should be made mandatory when full rollout
+variable "image_tag" {
+  type    = string
+  default = ""
+}
 variable "vpc_id" {}
 variable "platform_version" {
   default     = "LATEST"

@@ -4,6 +4,11 @@ locals {
   account_id           = data.aws_caller_identity.current.account_id
   region               = data.aws_region.current.name
   needs_execution_role = (length(var.secrets) > 0 ? true : false)
+  default_env_vars = {
+    DD_SERVICE = var.service_name
+    DD_VERSION = var.image_tag
+    DD_ENV     = lower(terraform.workspace)
+  }
 }
 
 resource "aws_cloudwatch_log_group" "service_log" {
@@ -50,7 +55,7 @@ locals {
     ],
     command : var.command,
     environment : [
-      for k, v in var.env_vars : { name : k, value : v }
+      for k, v in merge(local.default_env_vars, var.env_vars) : { name : k, value : v }
     ],
     secrets : [
       for env_var, ssm_path in var.secrets : { name : env_var, valueFrom : format("arn:aws:ssm:%s:%s:parameter%s", local.region, local.account_id, ssm_path) }
@@ -151,7 +156,6 @@ locals {
       environment : [
         { name : "DD_API_KEY", value : var.datadog_api_key },
         { name : "DD_SITE", value : "datadoghq.eu" },
-        { name : "ECS_FARGATE", value : "true" },
         { name : "DD_TAGS", value : join(" ", [for k, v in var.tags : format("%s:%s", k, v)]) },
         { name : "DD_APM_ENABLED", value : tostring(var.enable_datadog_agent_apm) },
         { name : "DD_APM_IGNORE_RESOURCES", value : join(",", var.datadog_apm_ignore_ressources) },
@@ -159,7 +163,8 @@ locals {
         { name : "DD_ENV", value : lower(terraform.workspace) },
         { name : "DD_LOGS_INJECTION", value : tostring(var.enable_datadog_logs_injection) },
         { name : "DD_SERVICE", value : var.service_name },
-        { name : "DD_DOGSTATSD_MAPPER_PROFILES", value : var.datadog_mapper }
+        { name : "DD_DOGSTATSD_MAPPER_PROFILES", value : var.datadog_mapper },
+        { name : "ECS_FARGATE", value : "true" }
       ],
       logConfiguration : var.collect_datadog_agent_logs ? {
         logDriver : "awsfirelens",
