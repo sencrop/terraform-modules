@@ -30,7 +30,7 @@ locals {
     DD_SERVICE           = var.service_name
     DD_VERSION           = var.app_version
     DD_ENV               = lower(terraform.workspace)
-    DD_TAGS              = join(" ", [for k, v in merge(local.dd_src_code_integration_tags, var.dd_tags) : format("%s:%s", k, v)])
+    DD_TAGS              = join(",", [for k, v in merge(local.dd_src_code_integration_tags, var.dd_tags) : format("%s:%s", k, v)])
   }
 
   main_task_env_vars = merge(local.default_env_vars, var.env_vars)
