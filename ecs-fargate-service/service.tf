@@ -234,6 +234,9 @@ resource "aws_ecs_task_definition" "task" {
   cpu    = var.cpu
   memory = var.mem
 
+  # set ipc_mode and pid_mode to "" to avoid irrelevant diff
+  ipc_mode         = ""
+  pid_mode         = ""
 
   # secrets could be fetched using special ECS mechanism
   ## https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data-parameters.html#secrets-envvar-parameters
