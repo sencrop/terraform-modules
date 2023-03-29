@@ -103,7 +103,6 @@ resource "aws_alb_target_group" "lb_priv" {
 
   # avoid overloading a loaded host
   load_balancing_algorithm_type = "least_outstanding_requests"
-  slow_start = 30  # seconds before sending full share of requests to a new target
 
   health_check {
     path                = var.healthcheck_path
