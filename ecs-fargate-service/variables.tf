@@ -247,3 +247,7 @@ variable "datadog_mapper" {
   description = "Where to put some inline mappings between metrics emitted by some software and Datadog. Used only for Airflow as of now."
 }
 
+variable "lb_algorithm_type" {
+  default = "round_robin"
+  description = "Possible values 'round_robin' or 'least_outstanding_requests'. Applies to any type of LB (public or private)."
+}

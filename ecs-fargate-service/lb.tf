@@ -96,6 +96,8 @@ resource "aws_alb_target_group" "lb" {
   vpc_id      = var.vpc_id
   target_type = "ip"
 
+  load_balancing_algorithm_type = var.lb_algorithm_type
+
   health_check {
     path     = var.healthcheck_path
     interval = var.healthcheck_interval
