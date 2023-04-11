@@ -170,7 +170,8 @@ locals {
         { name : "DD_ENV", value : lower(terraform.workspace) },
         { name : "DD_LOGS_INJECTION", value : tostring(var.enable_datadog_logs_injection) },
         { name : "DD_SERVICE", value : var.service_name },
-        { name : "DD_DOGSTATSD_MAPPER_PROFILES", value : var.datadog_mapper }
+        { name : "DD_DOGSTATSD_MAPPER_PROFILES", value : var.datadog_mapper },
+        { name: "DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_HTTP_ENDPOINT", value: tostring(var.datadog_receiver_otlp_http_endpoint)}
       ],
       logConfiguration : var.collect_datadog_agent_logs ? {
         logDriver : "awsfirelens",

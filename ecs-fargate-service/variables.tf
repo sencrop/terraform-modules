@@ -195,6 +195,10 @@ variable "enable_datadog_logs_injection" {
   default     = false
   description = "To inject trace IDs, span IDs, env, service, and version in the logs. See https://docs.datadoghq.com/tracing/connect_logs_and_traces/"
 }
+variable "datadog_receiver_otlp_http_endpoint" {
+  default = "localhost:4318"
+  description = "HTTP endpoint of the datadog agent used to receive traces in OpenTelemetry format"
+}
 variable "enable_datadog_src_code_integration" {
   type        = bool
   default     = false
