@@ -23,14 +23,14 @@ data "aws_region" "current" {}
 
 locals {
 
-  mappings = var.ports == [] ? (var.port == 0 ? [] : [var.port]) : var.ports
-  dd_src_code_integration_tags = var.enable_datadog_src_code_integration ? {"git.commit.sha" = var.commit_sha, "git.repository_url" = var.repository_url} : {}
+  mappings                     = var.ports == [] ? (var.port == 0 ? [] : [var.port]) : var.ports
+  dd_src_code_integration_tags = var.enable_datadog_src_code_integration ? { "git.commit.sha" = var.commit_sha, "git.repository_url" = var.repository_url } : {}
 
   default_env_vars = {
-    DD_SERVICE           = var.service_name
-    DD_VERSION           = var.app_version
-    DD_ENV               = lower(terraform.workspace)
-    DD_TAGS              = join(",", [for k, v in merge(local.dd_src_code_integration_tags, var.dd_tags) : format("%s:%s", k, v)])
+    DD_SERVICE = var.service_name
+    DD_VERSION = var.app_version
+    DD_ENV     = lower(terraform.workspace)
+    DD_TAGS    = join(",", [for k, v in merge(local.dd_src_code_integration_tags, var.dd_tags) : format("%s:%s", k, v)])
   }
 
   main_task_env_vars = merge(local.default_env_vars, var.env_vars)
@@ -90,7 +90,7 @@ locals {
         dd_service : var.service_name,
         dd_source : var.datadog_log_source,
         dd_message_key : "log",
-        dd_tags : join(",", [for k, v in merge({version: var.app_version}, var.tags) : format("%s:%s", k, v)])
+        dd_tags : join(",", [for k, v in merge({ version : var.app_version }, var.tags) : format("%s:%s", k, v)])
       }
     }
   )
@@ -170,7 +170,8 @@ locals {
         { name : "DD_ENV", value : lower(terraform.workspace) },
         { name : "DD_LOGS_INJECTION", value : tostring(var.enable_datadog_logs_injection) },
         { name : "DD_SERVICE", value : var.service_name },
-        { name : "DD_DOGSTATSD_MAPPER_PROFILES", value : var.datadog_mapper }
+        { name : "DD_DOGSTATSD_MAPPER_PROFILES", value : var.datadog_mapper },
+        { name : "DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_HTTP_ENDPOINT", value : tostring(var.datadog_receiver_otlp_http_endpoint) }
       ],
       logConfiguration : var.collect_datadog_agent_logs ? {
         logDriver : "awsfirelens",

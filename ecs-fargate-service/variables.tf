@@ -19,7 +19,7 @@ variable "service_name" {}
 // currently only used to set DD_VERSION
 // TODO: make it mandatory once it is set everywhere
 variable "app_version" {
-  type = string
+  type    = string
   default = ""
 }
 variable "port" {
@@ -39,7 +39,7 @@ variable "desired_tasks" {
 }
 variable "task_role_policies_arn" {
   default = []
-  type    = list
+  type    = list(any)
 }
 variable "lb_subnets" {
   description = "list of subnet IDs for the public LB"
@@ -146,8 +146,8 @@ variable "tags" {
   default = {}
 }
 variable "dd_tags" {
-  default = {}
-  type = map(string)
+  default     = {}
+  type        = map(string)
   description = "tags added to the DD_TAGS environment variable of the main task"
 }
 
@@ -195,19 +195,23 @@ variable "enable_datadog_logs_injection" {
   default     = false
   description = "To inject trace IDs, span IDs, env, service, and version in the logs. See https://docs.datadoghq.com/tracing/connect_logs_and_traces/"
 }
+variable "datadog_receiver_otlp_http_endpoint" {
+  default     = "localhost:4318"
+  description = "HTTP endpoint of the datadog agent used to receive traces in OpenTelemetry format"
+}
 variable "enable_datadog_src_code_integration" {
   type        = bool
   default     = false
   description = "Enable the (APM) source code integration, commit_sha and repository_url should be defined as well"
 }
 variable "commit_sha" {
-  type = string
-  default = ""
+  type        = string
+  default     = ""
   description = "git commit sha of the configured service version"
 }
 variable "repository_url" {
-  type = string
-  default = ""
+  type        = string
+  default     = ""
   description = "http url of the git repository"
 }
 variable "public_lb_access_logs_bucket" {
@@ -248,6 +252,6 @@ variable "datadog_mapper" {
 }
 
 variable "lb_algorithm_type" {
-  default = "round_robin"
+  default     = "round_robin"
   description = "Possible values 'round_robin' or 'least_outstanding_requests'. Applies to any type of LB (public or private)."
 }
