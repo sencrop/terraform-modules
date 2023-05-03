@@ -53,6 +53,7 @@ variable "additional_security_groups" {
 variable "env_vars" {
   default = {}
   type    = map(string)
+  sensitive = true
 }
 variable "secrets" {
   default = {}
