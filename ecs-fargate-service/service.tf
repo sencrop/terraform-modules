@@ -3,7 +3,7 @@ locals {
   cluster_name         = reverse(split("/", var.ecs_cluster_id))[0]
   account_id           = data.aws_caller_identity.current.account_id
   region               = data.aws_region.current.name
-  needs_execution_role = (length(var.secrets) > 0 ? true : false)
+  needs_execution_role = (length(var.secrets_ssm_paths) > 0 ? true : false)
 }
 
 resource "aws_cloudwatch_log_group" "service_log" {
@@ -63,9 +63,9 @@ locals {
     environment : [
       for k, v in local.main_task_env_vars : { name : k, value : v }
     ],
-    secrets : [
-      for env_var, ssm_path in var.secrets : { name : env_var, valueFrom : format("arn:aws:ssm:%s:%s:parameter%s", local.region, local.account_id, ssm_path) }
-    ],
+    secrets : sensitive([
+      for env_var, ssm_path in var.secrets_ssm_paths : { name : env_var, valueFrom : format("arn:aws:ssm:%s:%s:parameter%s", local.region, local.account_id, ssm_path) }
+    ]),
     logConfiguration : local.logConf
   }]
 
@@ -216,10 +216,10 @@ resource "aws_iam_role" "execution_role" {
 }
 
 resource "aws_iam_role_policy" "read-task-secrets" {
-  count  = (length(var.secrets) > 0 ? 1 : 0)
+  count  = (length(var.secrets_ssm_paths) > 0 ? 1 : 0)
   name   = "${var.service_name}-${terraform.workspace}-secrets"
   role   = aws_iam_role.execution_role[0].id
-  policy = templatefile("${path.module}/policies/read-task-secrets.tftpl", { region : local.region, account_id : local.account_id, ssm_parameters : values(var.secrets) })
+  policy = templatefile("${path.module}/policies/read-task-secrets.tftpl", { region : local.region, account_id : local.account_id, ssm_parameters : values(var.secrets_ssm_paths) })
 }
 
 # task definition

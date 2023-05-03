@@ -55,7 +55,7 @@ variable "env_vars" {
   type    = map(string)
   sensitive = true
 }
-variable "secrets" {
+variable "secrets_ssm_paths" {
   default = {}
   type    = map(string)
 }
@@ -167,6 +167,7 @@ variable "logs" {
 }
 variable "datadog_api_key" {
   default = ""
+  sensitive = true
 }
 variable "logs_json" {
   default     = false

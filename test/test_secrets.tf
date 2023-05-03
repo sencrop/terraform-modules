@@ -7,7 +7,7 @@ module "test_secrets" {
   mem          = 512
   port         = 8080
 
-  secrets = {
+  secrets_ssm_paths = {
     "MY_LITTLE_SECRET" : "/tf/test/my-little-secret",
     "MY_BIG_SECRET"    : "/tf/test/my-big-secret"
 
