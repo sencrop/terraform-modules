@@ -63,9 +63,9 @@ locals {
     environment : [
       for k, v in local.main_task_env_vars : { name : k, value : v }
     ],
-    secrets : sensitive([
+    secrets : [
       for env_var, ssm_path in var.secrets_ssm_paths : { name : env_var, valueFrom : format("arn:aws:ssm:%s:%s:parameter%s", local.region, local.account_id, ssm_path) }
-    ]),
+    ],
     logConfiguration : local.logConf
   }]
 
