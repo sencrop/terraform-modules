@@ -10,7 +10,6 @@ module "test_secrets" {
   secrets_ssm_paths = {
     "MY_LITTLE_SECRET" : "/tf/test/my-little-secret",
     "MY_BIG_SECRET"    : "/tf/test/my-big-secret"
-
   }
 
   ecs_cluster_id = data.terraform_remote_state.common.outputs.main_ecs_cluster_id

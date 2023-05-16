@@ -51,8 +51,8 @@ variable "additional_security_groups" {
   default     = []
 }
 variable "env_vars" {
-  default = {}
-  type    = map(string)
+  default   = {}
+  type      = map(string)
   sensitive = true
 }
 variable "secrets_ssm_paths" {
@@ -166,7 +166,7 @@ variable "logs" {
   description = "Should be \"cloudwatch\" or \"datadog\"."
 }
 variable "datadog_api_key" {
-  default = ""
+  default   = ""
   sensitive = true
 }
 variable "logs_json" {
