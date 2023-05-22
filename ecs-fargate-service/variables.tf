@@ -143,6 +143,14 @@ variable "autoscale_min_tasks" {
 variable "autoscale_cpu_target" {
   default = 80
 }
+variable "autoscale_scale_in_cooldown" {
+  default     = 3600
+  description = "Amount of time, in seconds, after a scale in activity completes before another scale in activity can start"
+}
+variable "autoscale_scale_out_cooldown" {
+  default     = 300
+  description = "Amount of time, in seconds, after a scale out activity completes before another scale out activity can start"
+}
 variable "tags" {
   default = {}
 }
