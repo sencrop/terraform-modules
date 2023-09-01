@@ -28,11 +28,11 @@
         },
         {
             "rulePriority": 3,
-            "description": "Keep at most 100 images",
+            "description": "Keep at most 50 images",
             "selection": {
                 "tagStatus": "any",
                 "countType": "imageCountMoreThan",
-                "countNumber": 100
+                "countNumber": 50
             },
             "action": {
                 "type": "expire"
