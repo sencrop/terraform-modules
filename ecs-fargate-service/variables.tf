@@ -131,6 +131,7 @@ variable "local_discovery_service_name" {
 variable "discovery_namespace_id" {
   default = ""
 }
+
 variable "enable_autoscale" {
   default = false
 }
@@ -216,6 +217,10 @@ variable "enable_datadog_src_code_integration" {
   default     = false
   description = "Enable the (APM) source code integration, commit_sha and repository_url should be defined as well"
 }
+variable "datadog_logs_intake_endpoint" {
+  type    = string
+  default = "http-intake.logs.datadoghq.eu"
+}
 variable "commit_sha" {
   type        = string
   default     = ""
@@ -266,4 +271,14 @@ variable "datadog_mapper" {
 variable "lb_algorithm_type" {
   default     = "round_robin"
   description = "Possible values 'round_robin' or 'least_outstanding_requests'. Applies to any type of LB (public or private)."
+}
+
+variable "enable_service_mesh" {
+  type    = bool
+  default = false
+}
+
+variable "collect_service_connect_logs" {
+  type    = bool
+  default = false
 }

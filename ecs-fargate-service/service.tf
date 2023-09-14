@@ -23,7 +23,7 @@ data "aws_region" "current" {}
 
 locals {
 
-  mappings                     = var.ports == [] ? (var.port == 0 ? [] : [var.port]) : var.ports
+  container_ports              = var.ports == [] ? (var.port == 0 ? [] : [var.port]) : var.ports
   dd_src_code_integration_tags = var.enable_datadog_src_code_integration ? { "git.commit.sha" = var.commit_sha, "git.repository_url" = var.repository_url } : {}
 
   default_env_vars = {
@@ -57,7 +57,7 @@ locals {
       }]
     ),
     portMappings : [
-      for p in local.mappings : { containerPort : p, hostPort : p, protocol : "tcp" }
+      for p in local.container_ports : { containerPort : p, hostPort : p, protocol : "tcp", name = format("tcp-%s", containerPort) }
     ],
     command : var.command,
     environment : [
@@ -84,7 +84,7 @@ locals {
       options : {
         Name : "datadog",
         apikey : var.datadog_api_key,
-        Host : "http-intake.logs.datadoghq.eu",
+        Host : var.datadog_logs_intake_endpoint,
         TLS : "on",
         provider : "ecs",
         dd_service : var.service_name,
@@ -178,7 +178,7 @@ locals {
         options : {
           Name : "datadog",
           apikey : var.datadog_api_key,
-          Host : "http-intake.logs.datadoghq.eu",
+          Host : var.datadog_logs_intake_endpoint,
           TLS : "on",
           provider : "ecs",
           dd_service : var.service_name,
@@ -267,6 +267,27 @@ resource "aws_ecs_service" "service" {
       var.additional_security_groups[*]
     )
     subnets = var.task_subnets
+  }
+
+  service_connect_configuration {
+    enabled   = var.enable_service_mesh
+    namespace = format("arn:aws:servicediscovery:%s:%s:namespace/%s", local.region, local.account_id, var.discovery_namespace_id)
+    service   = [for p in local.container_ports : { portName = format("tcp-%s", p), client_alias = { dns_name = format("tcp-%s", p), port = p } }]
+    log_configuration = var.collect_service_connect_logs ? {
+      logDriver : "awsfirelens",
+      options : {
+        Name : "datadog",
+        apikey : var.datadog_api_key,
+        Host : var.datadog_logs_intake_endpoint,
+        TLS : "on",
+        provider : "ecs",
+        dd_service : var.service_name,
+        dd_source : "datadog-agent",
+        dd_message_key : "log",
+        dd_tags : join(",", [for k, v in var.tags : format("%s:%s", k, v)])
+      }
+    } : null
+
   }
 
   health_check_grace_period_seconds = (var.enable_public_lb || var.enable_private_lb) ? var.healthcheck_grace_period : null
