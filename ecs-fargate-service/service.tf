@@ -43,6 +43,7 @@ locals {
     name : var.service_name,
     networkMode : "awsvpc",
     mountPoints : [],
+    stopTimeout : var.stop_timeout
     ulimits : (
       var.docker_ulimits == [] ?
       null :

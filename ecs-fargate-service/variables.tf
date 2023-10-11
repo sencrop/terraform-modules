@@ -90,8 +90,9 @@ variable "healthcheck_interval" {
   default = 5
 }
 variable "healthcheck_grace_period" {
-  default = 60
+  default = 30
   type    = number
+  description = "Failed health check won't be accounted to determine the health status of the task during the grace period"
 }
 variable "healthcheck_timeout" {
   default = 5
@@ -116,7 +117,9 @@ variable "public_lb_dns_name" {
   default = ""
 }
 variable "public_lb_idle_timeout" {
-  default = 60
+  type        = number
+  default     = 60
+  description = "How long in seconds the load balancer will keep an idle connection open with the backend"
 }
 variable "enable_public_lb" {
   default = true
@@ -161,9 +164,9 @@ variable "dd_tags" {
   type        = map(string)
   description = "tags added to the DD_TAGS environment variable of the main task"
 }
-
 variable "deregistration_delay" {
-  description = "load balancer target group deregistration"
+  type        = number
+  description = "How long in second a load balancer will keep a target in DRAINING state before removing it from the targets. Most of the time this should be aligned with the idle timeout."
   default     = 60
 }
 variable "docker_ulimits" {
@@ -249,7 +252,9 @@ variable "private_lb_dns_name" {
   default = ""
 }
 variable "private_lb_idle_timeout" {
-  default = 60
+  type        = number
+  default     = 60
+  description = "How long in seconds the load balancer will keep an idle connection open with the backend"
 }
 variable "lb_private_additional_security_groups" {
   description = "additional security groups for private LB"
@@ -266,4 +271,9 @@ variable "datadog_mapper" {
 variable "lb_algorithm_type" {
   default     = "round_robin"
   description = "Possible values 'round_robin' or 'least_outstanding_requests'. Applies to any type of LB (public or private)."
+}
+variable "stop_timeout" {
+  type        = number
+  default     = 5
+  description = "How long in seconds the orchestrator will wait to send a SIGKILL after a SIGTERM, max 120 seconds"
 }
