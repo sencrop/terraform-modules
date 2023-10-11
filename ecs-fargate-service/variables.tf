@@ -87,7 +87,7 @@ variable "healthcheck_path" {
   default = ""
 }
 variable "healthcheck_interval" {
-  default = 30
+  default = 5
 }
 variable "healthcheck_grace_period" {
   default = null
@@ -164,7 +164,7 @@ variable "dd_tags" {
 
 variable "deregistration_delay" {
   description = "load balancer target group deregistration"
-  default     = 300
+  default     = 60
 }
 variable "docker_ulimits" {
   description = "see https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Ulimit.html"
