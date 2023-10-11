@@ -90,7 +90,7 @@ variable "healthcheck_interval" {
   default = 5
 }
 variable "healthcheck_grace_period" {
-  default = null
+  default = 60
   type    = number
 }
 variable "healthcheck_timeout" {
