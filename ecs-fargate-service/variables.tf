@@ -95,13 +95,14 @@ variable "healthcheck_grace_period" {
   description = "Failed health check won't be accounted to determine the health status of the task during the grace period"
 }
 variable "healthcheck_timeout" {
-  default = 5
+  default = 1
+  type = number
 }
 variable "healthcheck_matcher" {
   default = "200-399"
 }
 variable "healthcheck_unhealthy_threshold" {
-  default = 3
+  default = 5
 }
 variable "lb_certificate_arn" {
   default = ""
