@@ -95,8 +95,9 @@ variable "healthcheck_grace_period" {
   description = "Failed health check won't be accounted to determine the health status of the task during the grace period"
 }
 variable "healthcheck_timeout" {
-  default = 1
+  default = 2
   type = number
+  description = "timeout range must be between 2 and 120 seconds"
 }
 variable "healthcheck_matcher" {
   default = "200-399"
