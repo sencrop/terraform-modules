@@ -31,7 +31,7 @@ locals {
     DD_VERSION                 = var.app_version
     DD_ENV                     = lower(terraform.workspace)
     DD_TAGS                    = join(",", [for k, v in merge(local.dd_src_code_integration_tags, var.dd_tags) : format("%s:%s", k, v)])
-    DD_RUNTIME_METRICS_ENABLED = var.enable_datadog_runtime_metrics
+    DD_RUNTIME_METRICS_ENABLED = tostring(var.enable_datadog_runtime_metrics)
   }
 
   main_task_env_vars = merge(local.default_env_vars, var.env_vars)
