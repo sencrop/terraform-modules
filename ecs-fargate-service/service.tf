@@ -27,10 +27,11 @@ locals {
   dd_src_code_integration_tags = var.enable_datadog_src_code_integration ? { "git.commit.sha" = var.commit_sha, "git.repository_url" = var.repository_url } : {}
 
   default_env_vars = {
-    DD_SERVICE = var.service_name
-    DD_VERSION = var.app_version
-    DD_ENV     = lower(terraform.workspace)
-    DD_TAGS    = join(",", [for k, v in merge(local.dd_src_code_integration_tags, var.dd_tags) : format("%s:%s", k, v)])
+    DD_SERVICE                 = var.service_name
+    DD_VERSION                 = var.app_version
+    DD_ENV                     = lower(terraform.workspace)
+    DD_TAGS                    = join(",", [for k, v in merge(local.dd_src_code_integration_tags, var.dd_tags) : format("%s:%s", k, v)])
+    DD_RUNTIME_METRICS_ENABLED = var.enable_datadog_runtime_metrics
   }
 
   main_task_env_vars = merge(local.default_env_vars, var.env_vars)
@@ -168,6 +169,7 @@ locals {
         { name : "DD_APM_ENABLED", value : tostring(var.enable_datadog_agent_apm) },
         { name : "DD_APM_IGNORE_RESOURCES", value : join(",", var.datadog_apm_ignore_ressources) },
         { name : "DD_APM_NON_LOCAL_TRAFFIC", value : tostring(var.enable_datadog_non_local_apm) },
+        { name : "DD_DOGSTATSD_NON_LOCAL_TRAFFIC", value : tostring(var.enable_datadog_dogstatsd_non_local_traffic) },
         { name : "DD_ENV", value : lower(terraform.workspace) },
         { name : "DD_LOGS_INJECTION", value : tostring(var.enable_datadog_logs_injection) },
         { name : "DD_SERVICE", value : var.service_name },
@@ -318,4 +320,3 @@ resource "aws_service_discovery_service" "name" {
     failure_threshold = 1
   }
 }
-
