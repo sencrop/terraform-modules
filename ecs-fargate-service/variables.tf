@@ -82,10 +82,7 @@ variable "collect_datadog_agent_logs" {
   default = false
   type    = bool
 }
-variable "enable_datadog_runtime_metrics" {
-  default = false
-  type    = bool
-}
+
 variable "healthcheck_path" {
   default = ""
 }
@@ -93,13 +90,13 @@ variable "healthcheck_interval" {
   default = 5
 }
 variable "healthcheck_grace_period" {
-  default     = 30
-  type        = number
+  default = 30
+  type    = number
   description = "Failed health check won't be accounted to determine the health status of the task during the grace period"
 }
 variable "healthcheck_timeout" {
-  default     = 2
-  type        = number
+  default = 2
+  type = number
   description = "timeout range must be between 2 and 120 seconds"
 }
 variable "healthcheck_matcher" {
@@ -206,10 +203,6 @@ variable "enable_datadog_agent_apm" {
 variable "enable_datadog_non_local_apm" {
   default     = false
   description = "To enable APM data collection in datadog agent with APM features."
-}
-variable "enable_datadog_dogstatsd_non_local_traffic" {
-  default     = false
-  description = "To enable DogStatsD data collection in datadog agent"
 }
 variable "datadog_apm_ignore_ressources" {
   default     = []
