@@ -269,7 +269,8 @@ resource "aws_ecs_service" "service" {
       aws_security_group.lb_priv_to_service[*].id,
       var.additional_security_groups[*]
     )
-    subnets = var.task_subnets
+    subnets          = var.task_subnets
+    assign_public_ip = var.task_public_ip
   }
 
   health_check_grace_period_seconds = (var.enable_public_lb || var.enable_private_lb) ? var.healthcheck_grace_period : null
