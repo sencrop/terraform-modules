@@ -127,7 +127,8 @@ variable "public_lb_idle_timeout" {
   description = "How long in seconds the load balancer will keep an idle connection open with the backend"
 }
 variable "enable_public_lb" {
-  default = true
+  default     = true
+  description = "Add a public loadbalancer in front of the service"
 }
 variable "enable_local_discovery" {
   default = false
@@ -285,4 +286,9 @@ variable "stop_timeout" {
   type        = number
   default     = 5
   description = "How long in seconds the orchestrator will wait to send a SIGKILL after a SIGTERM, max 120 seconds"
+}
+variable "task_public_ip" {
+  type        = bool
+  default     = false
+  description = "Assign a public IP directly to the task, the task must be deployed on a public subnet"
 }
