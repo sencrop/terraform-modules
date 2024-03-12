@@ -99,7 +99,8 @@ resource "aws_alb_target_group" "lb" {
   load_balancing_algorithm_type = var.lb_algorithm_type
 
   health_check {
-    path     = var.healthcheck_port ? var.healthcheck_port : var.port
+    path     = var.healthcheck_path
+    port     = var.healthcheck_port ? var.healthcheck_port : var.port
     interval = var.healthcheck_interval
     timeout  = var.healthcheck_timeout
     matcher  = var.healthcheck_matcher
