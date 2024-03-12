@@ -89,7 +89,9 @@ variable "enable_datadog_runtime_metrics" {
 variable "healthcheck_path" {
   default = ""
 }
-variable "healthcheck_port" {}
+variable "healthcheck_port" {
+  default = 0
+}
 variable "healthcheck_interval" {
   default = 5
 }
