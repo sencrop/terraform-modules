@@ -23,10 +23,12 @@ variable "app_version" {
   default = ""
 }
 variable "port" {
-  default = 0
+  default     = 0
+  description = "The main port of the service. If using a loadbalancer the traffic will be sent to this port."
 }
 variable "ports" {
-  default = []
+  default     = []
+  description = "Every ports that need to be exposed by the service on its private IP address. Default to the value of the port variable if empty."
 }
 variable "image" {}
 variable "vpc_id" {}

@@ -23,7 +23,7 @@ data "aws_region" "current" {}
 
 locals {
 
-  mappings                     = var.ports == [] ? (var.port == 0 ? [] : [var.port]) : var.ports
+  exposed_ports                = var.ports == [] ? (var.port == 0 ? [] : [var.port]) : var.ports
   dd_src_code_integration_tags = var.enable_datadog_src_code_integration ? { "git.commit.sha" = var.commit_sha, "git.repository_url" = var.repository_url } : {}
 
   default_env_vars = {
@@ -59,7 +59,7 @@ locals {
       }]
     ),
     portMappings : [
-      for p in local.mappings : { containerPort : p, hostPort : p, protocol : "tcp" }
+      for p in local.exposed_ports : { containerPort : p, hostPort : p, protocol : "tcp" }
     ],
     command : var.command,
     environment : [
