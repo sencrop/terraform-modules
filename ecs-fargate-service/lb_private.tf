@@ -49,7 +49,7 @@ resource "aws_security_group" "lb_priv_to_service" {
   vpc_id      = var.vpc_id
 
   dynamic "ingress" {
-    for_each = toset(concat(var.ports, [var.port]))
+    for_each = var.enable_private_lb ? toset(concat(var.ports, [var.port])) : []
     content {
       protocol        = "tcp"
       from_port       = ingress.value
