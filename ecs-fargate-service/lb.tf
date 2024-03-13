@@ -37,11 +37,14 @@ resource "aws_security_group" "lb_to_service" {
   description = "inbound access from the LB for ${var.service_name}"
   vpc_id      = var.vpc_id
 
-  ingress {
-    protocol        = "tcp"
-    from_port       = var.port
-    to_port         = var.port
-    security_groups = [aws_security_group.lb[0].id]
+  dynamic "ingress" {
+    for_each = toset(concat(var.ports, [var.port]))
+    content {
+      protocol        = "tcp"
+      from_port       = ingress.value
+      to_port         = ingress.value
+      security_groups = [aws_security_group.lb_priv[0].id]
+    }
   }
 
   egress {
