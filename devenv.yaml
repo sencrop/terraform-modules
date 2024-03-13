@@ -1,0 +1,5 @@
+inputs:
+  nixpkgs:
+    url: github:NixOS/nixpkgs/nixpkgs-unstable
+  nixpkgs-for-terraform:
+    url: github:NixOS/nixpkgs?rev=f16782430400bbae03024c63e8d5f1b6261a8543
