@@ -77,7 +77,7 @@ variable "availability_sidecar_image" {
   default = "812957082909.dkr.ecr.eu-central-1.amazonaws.com/observability-tools:8c06fd0"
 }
 variable "datadog_agent_image_tag" {
-  default = "public.ecr.aws/datadog/agent:latest"
+  default = "812957082909.dkr.ecr.eu-central-1.amazonaws.com/mirror/datadog/agent:latest"
   type    = string
 }
 variable "collect_datadog_agent_logs" {
@@ -296,4 +296,8 @@ variable "task_public_ip" {
   type        = bool
   default     = false
   description = "Assign a public IP directly to the task, the task must be deployed on a public subnet"
+}
+variable "fluent_bit_image_tag" {
+  type    = string
+  default = "812957082909.dkr.ecr.eu-central-1.amazonaws.com/mirror/aws-observability/aws-for-fluent-bit:2.19.0"
 }
