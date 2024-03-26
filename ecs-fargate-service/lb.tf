@@ -103,7 +103,7 @@ resource "aws_alb_target_group" "lb" {
 
   health_check {
     path     = var.healthcheck_path
-    port     = var.healthcheck_port != 0 ? var.healthcheck_port : var.port
+    port     = var.healthcheck_port != "traffic-port" ? var.healthcheck_port : var.port
     interval = var.healthcheck_interval
     timeout  = var.healthcheck_timeout
     matcher  = var.healthcheck_matcher
