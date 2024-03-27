@@ -301,3 +301,8 @@ variable "fluent_bit_image_tag" {
   type    = string
   default = "812957082909.dkr.ecr.eu-central-1.amazonaws.com/public-ecr/aws-observability/aws-for-fluent-bit:2.19.0"
 }
+variable "enable_execute_command" {
+  type        = bool
+  default     = false
+  description = "Allow an operator to exec inisde containers using aws ecs execute-command"
+}
