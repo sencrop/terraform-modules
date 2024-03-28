@@ -159,7 +159,7 @@ locals {
     [{
       name : "datadog-agent",
       image : var.datadog_agent_image_tag,
-      memory : 256,
+      memory : var.datadog_agent_memory,
       cpu : 0,
       environment : [
         { name : "DD_API_KEY", value : var.datadog_api_key },
