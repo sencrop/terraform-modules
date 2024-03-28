@@ -80,10 +80,16 @@ variable "datadog_agent_image_tag" {
   default = "812957082909.dkr.ecr.eu-central-1.amazonaws.com/public-ecr/datadog/agent:latest"
   type    = string
 }
+variable "datadog_agent_memory" {
+  default = 256
+  type = number
+  description = "memory allocated to the Datadog agent container"
+}
 variable "collect_datadog_agent_logs" {
   default = false
   type    = bool
 }
+
 variable "enable_datadog_runtime_metrics" {
   default = false
   type    = bool
