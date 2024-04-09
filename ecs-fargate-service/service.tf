@@ -159,7 +159,7 @@ locals {
     [{
       name : "datadog-agent",
       image : var.datadog_agent_image_tag,
-      memory : 256,
+      memory : var.datadog_agent_memory,
       cpu : 0,
       environment : [
         { name : "DD_API_KEY", value : var.datadog_api_key },
@@ -211,6 +211,12 @@ resource "aws_iam_role_policy_attachment" "custom_policy" {
   policy_arn = each.value
 }
 
+resource "aws_iam_role_policy" "ecs_exec_policy" {
+  count  = var.enable_execute_command ? 1 : 0
+  role   = aws_iam_role.task_role.name
+  policy = file("${path.module}/policies/ecs_exec.json")
+}
+
 resource "aws_iam_role" "execution_role" {
   count               = (local.needs_execution_role ? 1 : 0)
   name                = "${var.service_name}-${terraform.workspace}-task-execution-role"
@@ -255,13 +261,14 @@ resource "aws_ecs_task_definition" "task" {
 
 # service definition
 resource "aws_ecs_service" "service" {
-  count            = var.task_definition_only == true ? 0 : 1
-  name             = var.service_name
-  cluster          = var.ecs_cluster_id
-  task_definition  = aws_ecs_task_definition.task.arn
-  desired_count    = var.desired_tasks
-  launch_type      = "FARGATE"
-  platform_version = var.platform_version
+  count                  = var.task_definition_only == true ? 0 : 1
+  name                   = var.service_name
+  cluster                = var.ecs_cluster_id
+  task_definition        = aws_ecs_task_definition.task.arn
+  desired_count          = var.desired_tasks
+  launch_type            = "FARGATE"
+  platform_version       = var.platform_version
+  enable_execute_command = var.enable_execute_command
 
   network_configuration {
     security_groups = concat(
