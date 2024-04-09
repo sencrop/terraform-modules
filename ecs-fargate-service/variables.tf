@@ -228,7 +228,7 @@ variable "healthcheck_path" {
   default = ""
 }
 variable "healthcheck_port" {
-  default = 0
+  default = "traffic-port"
 }
 variable "healthcheck_interval" {
   default = 5
