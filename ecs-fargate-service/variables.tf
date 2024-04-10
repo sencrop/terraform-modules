@@ -111,6 +111,11 @@ variable "task_definition_only" {
   default     = false
   description = "When set to true only the task definition will be published"
 }
+variable "docker_labels" {
+  default = {}
+  type = map
+  description = "Labels added to the main task container at runtime"
+}
 /**************************************************
  * Service discovery
  * ***********************************************/
