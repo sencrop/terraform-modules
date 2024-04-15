@@ -102,11 +102,13 @@ resource "aws_alb_target_group" "lb" {
   load_balancing_algorithm_type = var.lb_algorithm_type
 
   health_check {
-    path     = var.healthcheck_path
-    port     = var.healthcheck_port
-    interval = var.healthcheck_interval
-    timeout  = var.healthcheck_timeout
-    matcher  = var.healthcheck_matcher
+    path                = var.healthcheck_path
+    port                = var.healthcheck_port
+    interval            = var.healthcheck_interval
+    timeout             = var.healthcheck_timeout
+    matcher             = var.healthcheck_matcher
+    unhealthy_threshold = var.healthcheck_unhealthy_threshold
+    healthy_threshold   = var.healthcheck_healthy_threshold
   }
 
   deregistration_delay = var.deregistration_delay

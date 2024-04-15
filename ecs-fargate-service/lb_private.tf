@@ -113,6 +113,7 @@ resource "aws_alb_target_group" "lb_priv" {
     timeout             = var.healthcheck_timeout
     matcher             = var.healthcheck_matcher
     unhealthy_threshold = var.healthcheck_unhealthy_threshold
+    healthy_threshold   = var.healthcheck_healthy_threshold
   }
 
   deregistration_delay = var.deregistration_delay
