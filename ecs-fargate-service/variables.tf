@@ -227,7 +227,7 @@ variable "lb_private_additional_security_groups" {
 variable "healthcheck_timeout" {
   default     = 2
   type        = number
-  description = "timeout range must be between 2 and 120 seconds"
+  description = "Amount of time, in seconds, during which no response from a target means a failed health check. The range is 2–120 seconds"
 }
 variable "healthcheck_path" {
   default = ""
@@ -236,14 +236,21 @@ variable "healthcheck_port" {
   default = "traffic-port"
 }
 variable "healthcheck_interval" {
+  description = "Approximate amount of time, in seconds, between health checks of an individual target. The range is 5-300. AWS default to 30. Must be greater than timeout."
   default = 5
 }
 variable "healthcheck_matcher" {
   default = "200-399"
 }
+variable "healthcheck_healthy_threshold" {
+  description = "Number of consecutive health check successes required before considering a target healthy. The range is 2-10. Defaults to 3"
+  default = 3
+}
 variable "healthcheck_unhealthy_threshold" {
+  description = "Number of consecutive health check failures required before considering a target unhealthy. The range is 2-10. AWS defaults to 3"
   default = 5
 }
+
 /**************************************************
  * Logging configuration
  * ***********************************************/
