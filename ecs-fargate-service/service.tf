@@ -50,6 +50,7 @@ locals {
       null :
       var.docker_ulimits
     ),
+    dockerLabels: var.docker_labels,
     volumesFrom : (
       var.side_car_image == "" ?
       [] :
