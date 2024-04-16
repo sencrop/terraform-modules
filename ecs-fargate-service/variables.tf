@@ -235,7 +235,6 @@ variable "healthcheck_timeout" {
 }
 variable "healthcheck_path" {
   default = ""
-  description = ""
 }
 variable "healthcheck_port" {
   default = "traffic-port"
