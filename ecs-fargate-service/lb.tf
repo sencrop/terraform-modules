@@ -102,6 +102,7 @@ resource "aws_alb_target_group" "lb" {
   load_balancing_algorithm_type = var.lb_algorithm_type
 
   health_check {
+    enabled             = var.healthcheck_enabled
     path                = var.healthcheck_path
     port                = var.healthcheck_port
     interval            = var.healthcheck_interval
