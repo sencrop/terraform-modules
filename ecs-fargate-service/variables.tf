@@ -224,6 +224,10 @@ variable "lb_private_additional_security_groups" {
   default     = []
 }
 # Healthcheck
+variable "healthcheck_enabled" {
+  type = bool
+  default = true
+}
 variable "healthcheck_timeout" {
   default     = 2
   type        = number
@@ -231,6 +235,7 @@ variable "healthcheck_timeout" {
 }
 variable "healthcheck_path" {
   default = ""
+  description = ""
 }
 variable "healthcheck_port" {
   default = "traffic-port"
