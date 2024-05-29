@@ -1,5 +1,6 @@
 inputs:
   nixpkgs:
     url: github:NixOS/nixpkgs/nixpkgs-unstable
+  # pinned terraform to 1.5.1, because post 1.6 it's marked 'unfree' (BSL)
   nixpkgs-for-terraform:
-    url: github:NixOS/nixpkgs?rev=f16782430400bbae03024c63e8d5f1b6261a8543
+    url: github:NixOS/nixpkgs?rev=13acdc21b762429b4c5c4bbe5a97bb5fa07a0175
