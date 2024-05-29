@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 terraform {
-  required_version = "= 1.0.11"
+  required_version = "= 1.5.1"
 }
 
 data "terraform_remote_state" "common" {
