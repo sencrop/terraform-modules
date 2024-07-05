@@ -116,6 +116,11 @@ variable "docker_labels" {
   type = map
   description = "Labels added to the main task container at runtime"
 }
+variable "force_new_deployment" {
+  type        = bool
+  default     = false
+  description = "When enabled a new deployment of the service will be forced at each run (even without change)"
+}
 /**************************************************
  * Service discovery
  * ***********************************************/
