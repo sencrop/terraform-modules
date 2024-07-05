@@ -270,6 +270,7 @@ resource "aws_ecs_service" "service" {
   launch_type            = "FARGATE"
   platform_version       = var.platform_version
   enable_execute_command = var.enable_execute_command
+  force_new_deployment   = var.force_new_deployment
 
   network_configuration {
     security_groups = concat(
