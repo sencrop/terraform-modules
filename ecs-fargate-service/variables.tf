@@ -280,6 +280,10 @@ variable "enable_datadog_runtime_metrics" {
   default = false
   type    = bool
 }
+variable "enable_dd_trace" {
+  default = true
+  type    = bool
+}
 variable "enable_datadog_agent" {
   default     = false
   description = "To enable a side-car with datadog agent to collect Fargate tasks metrics"
