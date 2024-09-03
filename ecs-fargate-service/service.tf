@@ -245,6 +245,10 @@ resource "aws_ecs_task_definition" "task" {
   cpu    = var.cpu
   memory = var.mem
 
+  runtime_platform {
+    operating_system_family = "LINUX"
+    cpu_architecture = var.cpu_architecture
+  }
 
   # secrets could be fetched using special ECS mechanism
   ## https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data-parameters.html#secrets-envvar-parameters
