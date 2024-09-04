@@ -18,6 +18,11 @@ Between 4096 and 16384 in increments of 1024 for cpu = 2048
 Between 8192 and 30720 in increments of 1024 for cpu = 4096
 EOS
 }
+variable "cpu_architecture" {
+  type = string
+  description = "X86_64 or ARM64"
+  default = "X86_64"
+}
 variable "service_name" {}
 // currently only used to set DD_VERSION
 // TODO: make it mandatory once it is set everywhere
