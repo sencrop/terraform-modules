@@ -204,12 +204,10 @@ resource "aws_iam_role" "task_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "custom_policy" {
-  # The "for_each" value depends on resource attributes that cannot be determined until apply,
-  # so Terraform cannot predict how many instances will be created.
-  # To work around this, use the -target argument to first apply only the resources that the for_each depends on.
-  for_each   = toset(var.task_role_policies_arn)
+  # task_role_policies_arn is being deprecated, if values are defined in task_role_attached_policies_arn, it will take priority
+  for_each   = length(keys(var.task_role_attached_policies_arn)) > 0 ? toset(keys(var.task_role_attached_policies_arn)) : toset(var.task_role_policies_arn)
   role       = aws_iam_role.task_role.name
-  policy_arn = each.value
+  policy_arn = length(keys(var.task_role_attached_policies_arn)) > 0 ? var.task_role_attached_policies_arn[each.value] : each.value
 }
 
 resource "aws_iam_role_policy" "ecs_exec_policy" {
