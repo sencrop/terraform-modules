@@ -48,8 +48,8 @@ variable "desired_tasks" {
   default = 1
 }
 variable "task_role_policies_arn" {
-  default = []
-  type    = list(any)
+  default = {}
+  type    = map(any)
 }
 variable "task_subnets" {}
 variable "ecs_cluster_id" {}
