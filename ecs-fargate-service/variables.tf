@@ -51,6 +51,7 @@ variable "task_role_policies_arn" {
   default = []
   type    = list(any)
 }
+
 variable "task_subnets" {}
 variable "ecs_cluster_id" {}
 variable "additional_security_groups" {
