@@ -204,10 +204,9 @@ resource "aws_iam_role" "task_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "custom_policy" {
-  # task_role_policies_arn is being deprecated, if values are defined in task_role_attached_policies_arn, it will take priority
-  for_each   = length(keys(var.task_role_attached_policies_arn)) > 0 ? toset(keys(var.task_role_attached_policies_arn)) : toset(var.task_role_policies_arn)
+  for_each   = {for index, policy_arn in var.task_role_policies_arn: index => policy_arn}
   role       = aws_iam_role.task_role.name
-  policy_arn = length(keys(var.task_role_attached_policies_arn)) > 0 ? var.task_role_attached_policies_arn[each.value] : each.value
+  policy_arn = each.value
 }
 
 resource "aws_iam_role_policy" "ecs_exec_policy" {

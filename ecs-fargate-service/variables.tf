@@ -47,15 +47,11 @@ variable "platform_version" {
 variable "desired_tasks" {
   default = 1
 }
-// DEPRECATED: use task_role_attached_policies_arn instead
 variable "task_role_policies_arn" {
   default = []
   type    = list(any)
 }
-variable "task_role_attached_policies_arn" {
-  default = {}
-  type    = map(any)
-}
+
 variable "task_subnets" {}
 variable "ecs_cluster_id" {}
 variable "additional_security_groups" {
