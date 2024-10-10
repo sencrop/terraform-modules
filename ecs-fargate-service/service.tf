@@ -69,8 +69,17 @@ locals {
     secrets : [
       for env_var, ssm_path in var.secrets_ssm_paths : { name : env_var, valueFrom : format("arn:aws:ssm:%s:%s:parameter%s", local.region, local.account_id, ssm_path) }
     ],
-    logConfiguration : local.logConf
+    logConfiguration : local.logConf,
+    healthCheck : length(var.container_healthcheck_command) == 0 ? null : local.container_healthcheck
   }]
+
+  container_healthcheck = {
+    command     = var.container_healthcheck_command
+    interval    = var.container_healthcheck_interval
+    timeout     = var.container_healthcheck_timeout
+    retries     = var.container_healthcheck_retries
+    startPeriod = var.container_healthcheck_start_period
+  }
 
   logConf = (
     var.logs == "cloudwatch" ?

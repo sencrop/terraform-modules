@@ -127,6 +127,41 @@ variable "force_new_deployment" {
   default     = false
   description = "When enabled a new deployment of the service will be forced at each run (even without change)"
 }
+
+# container healthchecks are based on command execution inside the task container
+# don't mix them with the use of load balancers healtchecks
+# https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_HealthCheck.html
+
+variable "container_healthcheck_command" {
+  type        = list
+  default     = []
+  description = "A string array representing the command that the container runs to determine if it is healthy. The string array must start with CMD to run the command arguments directly, or CMD-SHELL to run the command with the container's default shell."
+}
+
+variable "container_healthcheck_interval" {
+  type        = number
+  default     = 30
+  description = "The time period in seconds between each health check execution. You may specify between 5 and 300 seconds."
+}
+
+variable "container_healthcheck_retries" {
+  type        = number
+  default     = 3
+  description = "The number of times to retry a failed health check before the container is considered unhealthy. You may specify between 1 and 10 retries."
+}
+
+variable "container_healthcheck_timeout" {
+  type        = number
+  default     = 5
+  description = "The time period in seconds to wait for a health check to succeed before it is considered a failure. You may specify between 2 and 60 seconds."
+}
+
+variable "container_healthcheck_start_period" {
+  type        = number
+  default     = 30
+  description = "The optional grace period to provide containers time to bootstrap before failed health checks count towards the maximum number of retries. You can specify between 0 and 300 seconds."
+}
+
 /**************************************************
  * Service discovery
  * ***********************************************/
