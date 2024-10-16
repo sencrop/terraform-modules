@@ -162,6 +162,11 @@ variable "container_healthcheck_start_period" {
   description = "The optional grace period to provide containers time to bootstrap before failed health checks count towards the maximum number of retries. You can specify between 0 and 300 seconds."
 }
 
+variable "extra_target_groups" {
+  type        = list(any)
+  default     = []
+  description = "arn of extra target groups to register the tasks"
+}
 /**************************************************
  * Service discovery
  * ***********************************************/
