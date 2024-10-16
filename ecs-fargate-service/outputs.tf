@@ -15,7 +15,7 @@ output "alb_dns_name" {
 }
 
 output "alb_listener_arn" {
-  value = (var.enable_public_lb ? aws_alb_listener.lb_priv[0].arn : (var.enable_private_lb ? aws_alb_listener.lb_priv[0].dns_name : ""))
+  value = (var.enable_public_lb ? aws_alb_listener.lb_priv[0].arn : (var.enable_private_lb ? aws_alb_listener.lb_priv[0].arn : ""))
 }
 
 output "ecs_task_role_arn" {
