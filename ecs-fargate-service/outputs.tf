@@ -7,11 +7,15 @@ output "fullname" {
 }
 
 output "alb_zone_id" {
-  value = (var.enable_public_lb ? aws_alb.lb[0].zone_id : "")
+  value = (var.enable_public_lb ? aws_alb.lb[0].zone_id : (var.enable_private_lb ? aws_alb.lb_priv[0].zone_id : ""))
 }
 
 output "alb_dns_name" {
-  value = (var.enable_public_lb ? aws_alb.lb[0].dns_name : "")
+  value = (var.enable_public_lb ? aws_alb.lb[0].dns_name : (var.enable_private_lb ? aws_alb.lb_priv[0].dns_name : ""))
+}
+
+output "alb_listener_arn" {
+  value = (var.enable_public_lb ? aws_alb_listener.lb_priv[0].arn : (var.enable_private_lb ? aws_alb_listener.lb_priv[0].dns_name : ""))
 }
 
 output "ecs_task_role_arn" {
