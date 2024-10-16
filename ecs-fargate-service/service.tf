@@ -300,7 +300,7 @@ resource "aws_ecs_service" "service" {
   }
 
   dynamic "load_balancer" {
-    for_each = concat(aws_alb_target_group.lb[*].arn, aws_alb_target_group.lb_priv[*].arn)
+    for_each = concat(aws_alb_target_group.lb[*].arn, aws_alb_target_group.lb_priv[*].arn, var.extra_target_groups)
     content {
       target_group_arn = load_balancer.value
       container_name   = var.service_name
