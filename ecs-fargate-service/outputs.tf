@@ -18,6 +18,10 @@ output "alb_listener_arn" {
   value = (var.enable_public_lb ? aws_alb_listener.lb[0].arn : (var.enable_private_lb ? aws_alb_listener.lb_priv[0].arn : ""))
 }
 
+output "alb_security_group_id" {
+  value = (var.enable_public_lb ? aws_security_group.lb[0].id : (var.enable_private_lb ? aws_security_group.lb_priv[0].id : ""))
+}
+
 output "ecs_task_role_arn" {
   value = aws_iam_role.task_role.arn
 }
