@@ -215,7 +215,7 @@ variable "lb_algorithm_type" {
 }
 # Public load balancer
 variable "enable_public_lb" {
-  default     = true
+  default     = false
   description = "Add a public loadbalancer in front of the service"
 }
 variable "lb_subnets" {
