@@ -7,5 +7,6 @@ in
 {
   packages = with pkgs; [
     pinned-terraform-nixpkgs.terraform
+    tflint
   ];
 }
