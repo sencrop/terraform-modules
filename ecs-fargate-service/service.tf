@@ -150,20 +150,6 @@ locals {
     }]
   )
 
-  availabilty_side_car_task = (
-    var.availability_sidecar_enable == false ?
-    [] :
-    [{
-      image : var.availability_sidecar_image,
-      name : "availability-tools",
-      networkMode : "awsvpc"
-      environment : [
-        { name : "IS_CONNECT_JMX", value : "true" },
-        { name : "DD_ENV", value : lower(terraform.workspace) }
-      ]
-    }]
-  )
-
   datadog_agent_task = (
     var.enable_datadog_agent ?
     [{
@@ -263,7 +249,7 @@ resource "aws_ecs_task_definition" "task" {
   // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html
   container_definitions = jsonencode(
     flatten(
-      [local.main_task, local.side_car_task, local.availabilty_side_car_task, local.fluentbit_task, local.datadog_agent_task]
+      [local.main_task, local.side_car_task, local.fluentbit_task, local.datadog_agent_task]
     )
   )
 
