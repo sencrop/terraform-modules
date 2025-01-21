@@ -1,0 +1,13 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "ecr:CreateRepository",
+                "ecr:BatchImportUpstreamImage"
+            ],
+            "Effect": "Allow",
+            "Resource": "*"
+        }
+    ]
+}

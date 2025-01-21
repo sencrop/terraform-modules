@@ -2,11 +2,6 @@ locals {
   cluster_name         = reverse(split("/", var.ecs_cluster_arn))[0]
   account_id           = data.aws_caller_identity.current.account_id
   region               = data.aws_region.current.name
-  needs_execution_role = (length(var.secrets_ssm_paths) > 0 ? true : false)
-}
-
-data "aws_iam_role" "ecs_role" {
-  name = "ecsTaskExecutionRole"
 }
 
 data "aws_caller_identity" "current" {}
@@ -183,20 +178,30 @@ resource "aws_iam_role_policy_attachment" "custom_policy" {
 resource "aws_iam_role_policy" "ecs_exec_policy" {
   count  = var.enable_execute_command ? 1 : 0
   role   = aws_iam_role.task_role.name
-  policy = file("${path.module}/policies/ecs_exec.json")
+  policy = file("${path.module}/policies/exec-into-container.json")
 }
 
 resource "aws_iam_role" "execution_role" {
-  count               = (local.needs_execution_role ? 1 : 0)
   name                = "${var.service_name}-${var.task_name}-${terraform.workspace}-task-execution-role"
   assume_role_policy  = file("${path.module}/policies/assume/ecs-tasks.json")
-  managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"]
+}
+
+resource "aws_iam_role_policy" "download_image_from_ecr" {
+  name = "download-image-from-ecr"
+  role = aws_iam_role.execution_role.id
+  policy = file("${path.module}/policies/download-image-from-ecr.json")
+}
+
+resource "aws_iam_role_policy" "pull_image_through_cache" {
+  name = "pull-image-through-cache"
+  role = aws_iam_role.execution_role.id
+  policy = file("${path.module}/policies/pull-image-through-cache.json")
 }
 
 resource "aws_iam_role_policy" "read-task-secrets" {
   count  = (length(var.secrets_ssm_paths) > 0 ? 1 : 0)
   name   = "${var.service_name}-${var.task_name}-${terraform.workspace}-secrets"
-  role   = aws_iam_role.execution_role[0].id
+  role   = aws_iam_role.execution_role.id
   policy = templatefile("${path.module}/policies/read-task-secrets.tftpl", { region : local.region, account_id : local.account_id, ssm_parameters : values(var.secrets_ssm_paths) })
 }
 
@@ -205,7 +210,7 @@ resource "aws_ecs_task_definition" "task" {
   family                   = "${var.service_name}-${var.task_name}-${terraform.workspace}"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  execution_role_arn       = local.needs_execution_role ? aws_iam_role.execution_role[0].arn : data.aws_iam_role.ecs_role.arn
+  execution_role_arn       = aws_iam_role.execution_role.arn
   task_role_arn            = aws_iam_role.task_role.arn
 
   cpu    = var.cpu
