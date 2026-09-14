@@ -19,6 +19,8 @@ Capabilities:
 - task may have an optional side-car with volumes to mount into the task container
 - logs can be sent to Cloudwatch logs or Datadog (via AWS firelens & fluent-bit)
 - tasks can have an optional datadog agent running
+- Datadog [unified service tagging](https://docs.datadoghq.com/getting_started/tagging/unified_service_tagging/?tab=ecs) is set up out of the box.
+- AWS Cost Management tags `Environment` and `Application` are set.
 - service can have an optional public ALB
 - this ALB is given a name in Route53, with TLS termination, and associated https certificate.
 - service can optionally be referenced in service registry for local discovery (that is, in a Route53 DNS private .local zone)
