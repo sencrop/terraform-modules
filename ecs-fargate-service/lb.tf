@@ -22,7 +22,7 @@ resource "aws_security_group" "lb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = var.tags
+  tags = local.tags
 
   lifecycle {
     create_before_destroy = true
@@ -54,7 +54,7 @@ resource "aws_security_group" "lb_to_service" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = var.tags
+  tags = local.tags
 
   lifecycle {
     create_before_destroy = true
@@ -79,7 +79,7 @@ resource "aws_alb" "lb" {
     }
   }
 
-  tags = var.tags
+  tags = local.tags
 }
 
 resource "aws_wafv2_web_acl_association" "web_acl_association_my_lb" {

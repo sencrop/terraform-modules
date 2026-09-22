@@ -33,7 +33,7 @@ resource "aws_security_group" "lb_priv" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = var.tags
+  tags = local.tags
 
   lifecycle {
     create_before_destroy = true
@@ -65,7 +65,7 @@ resource "aws_security_group" "lb_priv_to_service" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = var.tags
+  tags = local.tags
 
   lifecycle {
     create_before_destroy = true
@@ -91,7 +91,7 @@ resource "aws_alb" "lb_priv" {
     }
   }
 
-  tags = var.tags
+  tags = local.tags
 }
 
 resource "aws_alb_target_group" "lb_priv" {

@@ -3,6 +3,15 @@ locals {
   cluster_name         = reverse(split("/", var.ecs_cluster_id))[0]
   account_id           = data.aws_caller_identity.current.account_id
   region               = data.aws_region.current.name
+
+  # AWS Cost Management tags, defaulted so that every resource is allocated. Values passed in var.tags take precedence.
+  tags = merge(
+    {
+      Environment = terraform.workspace
+      Application = var.service_name
+    },
+    var.tags
+  )
 }
 
 resource "aws_cloudwatch_log_group" "service_log" {
@@ -10,7 +19,7 @@ resource "aws_cloudwatch_log_group" "service_log" {
 
   name              = "/ecs/${local.cluster_name}/${var.service_name}_task"
   retention_in_days = 3
-  tags              = var.tags
+  tags              = local.tags
 }
 
 data "aws_caller_identity" "current" {}
@@ -20,6 +29,13 @@ locals {
 
   exposed_ports                = var.ports == [] ? (var.port == 0 ? [] : [var.port]) : var.ports
   dd_src_code_integration_tags = var.enable_datadog_src_code_integration ? { "git.commit.sha" = var.commit_sha, "git.repository_url" = var.repository_url } : {}
+
+  # Datadog unified service tagging: https://docs.datadoghq.com/getting_started/tagging/unified_service_tagging/?tab=ecs
+  dd_unified_service_tags = {
+    "com.datadoghq.tags.env"     = lower(terraform.workspace)
+    "com.datadoghq.tags.service" = var.service_name
+    "com.datadoghq.tags.version" = var.app_version
+  }
 
   default_env_vars = {
     DD_SERVICE                 = var.service_name
@@ -45,7 +61,7 @@ locals {
       null :
       var.docker_ulimits
     ),
-    dockerLabels: var.docker_labels,
+    dockerLabels : merge(local.dd_unified_service_tags, var.docker_labels),
     volumesFrom : (
       var.side_car_image == "" ?
       [] :
@@ -97,7 +113,7 @@ locals {
         dd_service : var.service_name,
         dd_source : var.datadog_log_source,
         dd_message_key : "log",
-        dd_tags : join(",", [for k, v in merge({ version : var.app_version }, var.tags) : format("%s:%s", k, v)])
+        dd_tags : join(",", [for k, v in merge({ env : lower(terraform.workspace), version : var.app_version }, local.tags) : format("%s:%s", k, v)])
       }
     }
   )
@@ -156,7 +172,7 @@ locals {
         { name : "DD_API_KEY", value : var.datadog_api_key },
         { name : "DD_SITE", value : "datadoghq.eu" },
         { name : "ECS_FARGATE", value : "true" },
-        { name : "DD_TAGS", value : join(" ", [for k, v in var.tags : format("%s:%s", k, v)]) },
+        { name : "DD_TAGS", value : join(" ", [for k, v in local.tags : format("%s:%s", k, v)]) },
         { name : "DD_APM_ENABLED", value : tostring(var.enable_datadog_agent_apm) },
         { name : "DD_APM_IGNORE_RESOURCES", value : join(",", var.datadog_apm_ignore_ressources) },
         { name : "DD_APM_NON_LOCAL_TRAFFIC", value : tostring(var.enable_datadog_non_local_apm) },
@@ -178,7 +194,7 @@ locals {
           dd_service : var.service_name,
           dd_source : "datadog-agent",
           dd_message_key : "log",
-          dd_tags : join(",", [for k, v in var.tags : format("%s:%s", k, v)])
+          dd_tags : join(",", [for k, v in local.tags : format("%s:%s", k, v)])
         }
       } : null
     }] :
@@ -190,7 +206,7 @@ locals {
 resource "aws_iam_role" "task_role" {
   name               = "${var.service_name}-${terraform.workspace}"
   assume_role_policy = file("${path.module}/policies/assume/ecs-tasks.json")
-  tags               = var.tags
+  tags               = local.tags
 }
 
 resource "aws_iam_role_policy_attachment" "custom_policy" {
@@ -265,7 +281,7 @@ resource "aws_ecs_task_definition" "task" {
     )
   )
 
-  tags = var.tags
+  tags = local.tags
 }
 
 # service definition
@@ -314,7 +330,7 @@ resource "aws_ecs_service" "service" {
   }
 
   propagate_tags = "SERVICE"
-  tags           = var.tags
+  tags           = local.tags
 }
 
 

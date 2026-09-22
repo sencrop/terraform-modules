@@ -24,11 +24,10 @@ variable "cpu_architecture" {
   default = "X86_64"
 }
 variable "service_name" {}
-// currently only used to set DD_VERSION
-// TODO: make it mandatory once it is set everywhere
 variable "app_version" {
-  type    = string
-  default = ""
+  type        = string
+  default     = ""
+  description = "Version of the application (e.g. git tag or commit sha). Used for Datadog unified service tagging: DD_VERSION env var, com.datadoghq.tags.version docker label and version tag on logs. Optional for now, the target is to make it mandatory once it is set everywhere."
 }
 variable "port" {
   default     = 0
@@ -85,7 +84,9 @@ variable "waf_acl_arn" {
   default = ""
 }
 variable "tags" {
-  default = {}
+  default     = {}
+  type        = map(string)
+  description = "Tags applied to every AWS resource created by the module and forwarded to Datadog (logs and agent). Environment and Application are required by AWS Cost Management: they default to terraform.workspace and service_name but should be set explicitly, the target is to make them mandatory."
 }
 variable "docker_ulimits" {
   description = "see https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Ulimit.html"
