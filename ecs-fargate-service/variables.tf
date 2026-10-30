@@ -240,7 +240,7 @@ variable "public_lb_idle_timeout" {
 }
 variable "public_lb_ssl_policy" {
   type        = string
-  default     = "ELBSecurityPolicy-TLS13-1-0-2021-06"
+  default     = "ELBSecurityPolicy-2016-08"
   description = "TLS security policy of the public load balancer HTTPS listener"
 }
 variable "lb_certificate_arn" {
