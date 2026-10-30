@@ -19,9 +19,9 @@ Between 8192 and 30720 in increments of 1024 for cpu = 4096
 EOS
 }
 variable "cpu_architecture" {
-  type = string
+  type        = string
   description = "X86_64 or ARM64"
-  default = "X86_64"
+  default     = "X86_64"
 }
 variable "service_name" {}
 variable "app_version" {
@@ -113,8 +113,8 @@ variable "task_definition_only" {
   description = "When set to true only the task definition will be published"
 }
 variable "docker_labels" {
-  default = {}
-  type = map
+  default     = {}
+  type        = map(any)
   description = "Labels added to the main task container at runtime"
 }
 variable "force_new_deployment" {
@@ -128,7 +128,7 @@ variable "force_new_deployment" {
 # https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_HealthCheck.html
 
 variable "container_healthcheck_command" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "A string array representing the command that the container runs to determine if it is healthy. The string array must start with CMD to run the command arguments directly, or CMD-SHELL to run the command with the container's default shell."
 }
@@ -238,6 +238,11 @@ variable "public_lb_idle_timeout" {
   default     = 60
   description = "How long in seconds the load balancer will keep an idle connection open with the backend"
 }
+variable "public_lb_ssl_policy" {
+  type        = string
+  default     = "ELBSecurityPolicy-TLS13-1-0-2021-06"
+  description = "TLS security policy of the public load balancer HTTPS listener"
+}
 variable "lb_certificate_arn" {
   default = ""
 }
@@ -271,7 +276,7 @@ variable "lb_private_additional_security_groups" {
 }
 # Healthcheck
 variable "healthcheck_enabled" {
-  type = bool
+  type    = bool
   default = true
 }
 variable "healthcheck_timeout" {
@@ -287,18 +292,18 @@ variable "healthcheck_port" {
 }
 variable "healthcheck_interval" {
   description = "Approximate amount of time, in seconds, between health checks of an individual target. The range is 5-300. AWS default to 30. Must be greater than timeout."
-  default = 5
+  default     = 5
 }
 variable "healthcheck_matcher" {
   default = "200-399"
 }
 variable "healthcheck_healthy_threshold" {
   description = "Number of consecutive health check successes required before considering a target healthy. The range is 2-10. Defaults to 3"
-  default = 3
+  default     = 3
 }
 variable "healthcheck_unhealthy_threshold" {
   description = "Number of consecutive health check failures required before considering a target unhealthy. The range is 2-10. AWS defaults to 3"
-  default = 5
+  default     = 5
 }
 
 /**************************************************
