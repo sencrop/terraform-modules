@@ -351,6 +351,26 @@ variable "enable_datadog_agent" {
   default     = false
   description = "To enable a side-car with datadog agent to collect Fargate tasks metrics"
 }
+variable "wait_for_healthy_datadog_agent" {
+  default     = false
+  type        = bool
+  description = "Start the application container only once the datadog-agent passes its health check (dependsOn HEALTHY instead of START). Only used when enable_datadog_agent is true."
+}
+variable "datadog_agent_healthcheck" {
+  type = object({
+    interval     = number
+    timeout      = number
+    retries      = number
+    start_period = number
+  })
+  default = {
+    interval     = 5
+    timeout      = 5
+    retries      = 3
+    start_period = 15
+  }
+  description = "Health check settings of the datadog-agent container, used when wait_for_healthy_datadog_agent is true. interval: 5-300 s, timeout: 2-60 s, retries: 1-10, start_period: 0-300 s. See https://docs.datadoghq.com/integrations/aws-fargate/?tab=awscli#create-an-ecs-fargate-task"
+}
 variable "datadog_api_key" {
   default   = ""
   sensitive = true
