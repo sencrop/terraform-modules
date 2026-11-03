@@ -1,8 +1,8 @@
 locals {
   # ecs_cluster_id is in arn format
-  cluster_name         = reverse(split("/", var.ecs_cluster_id))[0]
-  account_id           = data.aws_caller_identity.current.account_id
-  region               = data.aws_region.current.name
+  cluster_name = reverse(split("/", var.ecs_cluster_id))[0]
+  account_id   = data.aws_caller_identity.current.account_id
+  region       = data.aws_region.current.name
 
   # AWS Cost Management tags, defaulted so that every resource is allocated. Values passed in var.tags take precedence.
   tags = merge(
@@ -81,7 +81,9 @@ locals {
       for env_var, ssm_path in var.secrets_ssm_paths : { name : env_var, valueFrom : format("arn:aws:ssm:%s:%s:parameter%s", local.region, local.account_id, ssm_path) }
     ],
     logConfiguration : local.logConf,
-    healthCheck : length(var.container_healthcheck_command) == 0 ? null : local.container_healthcheck
+    healthCheck : length(var.container_healthcheck_command) == 0 ? null : local.container_healthcheck,
+    # ECS reverses START dependencies on shutdown: the agent stops after the application.
+    dependsOn : var.enable_datadog_agent ? [{ containerName : "datadog-agent", condition : "START" }] : null
   }]
 
   container_healthcheck = {
@@ -210,7 +212,7 @@ resource "aws_iam_role" "task_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "custom_policy" {
-  for_each   = {for index, policy_arn in var.task_role_policies_arn: index => policy_arn}
+  for_each   = { for index, policy_arn in var.task_role_policies_arn : index => policy_arn }
   role       = aws_iam_role.task_role.name
   policy_arn = each.value
 }
@@ -222,26 +224,26 @@ resource "aws_iam_role_policy" "ecs_exec_policy" {
 }
 
 resource "aws_iam_role" "execution_role" {
-  name                = "${var.service_name}-${terraform.workspace}-task-execution-role"
-  assume_role_policy  = file("${path.module}/policies/assume/ecs-tasks.json")
+  name               = "${var.service_name}-${terraform.workspace}-task-execution-role"
+  assume_role_policy = file("${path.module}/policies/assume/ecs-tasks.json")
 }
 
 resource "aws_iam_role_policy" "download_image_from_ecr" {
-  name = "download-image-from-ecr"
-  role = aws_iam_role.execution_role.id
+  name   = "download-image-from-ecr"
+  role   = aws_iam_role.execution_role.id
   policy = file("${path.module}/policies/download-image-from-ecr.json")
 }
 
 resource "aws_iam_role_policy" "pull_image_through_cache" {
-  name = "pull-image-through-cache"
-  role = aws_iam_role.execution_role.id
+  name   = "pull-image-through-cache"
+  role   = aws_iam_role.execution_role.id
   policy = file("${path.module}/policies/pull-image-through-cache.json")
 }
 
 resource "aws_iam_role_policy" "write_to_cloudwatch" {
-  count = (var.logs == "cloudwatch" ? 1 : 0)
-  name = "write-to-cloudwatch"
-  role = aws_iam_role.execution_role.id
+  count  = (var.logs == "cloudwatch" ? 1 : 0)
+  name   = "write-to-cloudwatch"
+  role   = aws_iam_role.execution_role.id
   policy = file("${path.module}/policies/write-to-cloudwatch.json")
 }
 
@@ -267,7 +269,7 @@ resource "aws_ecs_task_definition" "task" {
 
   runtime_platform {
     operating_system_family = "LINUX"
-    cpu_architecture = var.cpu_architecture
+    cpu_architecture        = var.cpu_architecture
   }
 
   # secrets could be fetched using special ECS mechanism
