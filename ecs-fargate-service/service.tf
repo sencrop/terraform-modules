@@ -82,8 +82,12 @@ locals {
     ],
     logConfiguration : local.logConf,
     healthCheck : length(var.container_healthcheck_command) == 0 ? null : local.container_healthcheck,
-    # ECS reverses START dependencies on shutdown: the agent stops after the application.
-    dependsOn : var.enable_datadog_agent ? [{ containerName : "datadog-agent", condition : "START" }] : null
+    # ECS reverses dependencies on shutdown: the agent stops after the application.
+    # HEALTHY additionally makes the application wait until the agent is ready.
+    dependsOn : var.enable_datadog_agent ? [{
+      containerName : "datadog-agent",
+      condition : var.wait_for_healthy_datadog_agent ? "HEALTHY" : "START"
+    }] : null
   }]
 
   container_healthcheck = {
@@ -198,6 +202,16 @@ locals {
           dd_message_key : "log",
           dd_tags : join(",", [for k, v in local.tags : format("%s:%s", k, v)])
         }
+      } : null,
+      # Only set when opted in: on a long-running service, ECS replaces tasks whose essential containers are unhealthy.
+      # Command from https://docs.datadoghq.com/integrations/aws-fargate/?tab=awscli#create-an-ecs-fargate-task
+      # (Datadog's example uses interval = 30; the default here is 5, the ECS minimum, so the application waits less).
+      healthCheck : var.wait_for_healthy_datadog_agent ? {
+        command     = ["CMD-SHELL", "agent health"]
+        interval    = var.datadog_agent_healthcheck.interval
+        timeout     = var.datadog_agent_healthcheck.timeout
+        retries     = var.datadog_agent_healthcheck.retries
+        startPeriod = var.datadog_agent_healthcheck.start_period
       } : null
     }] :
     []
